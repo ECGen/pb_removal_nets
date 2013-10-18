@@ -1,0 +1,962 @@
+\documentclass[12pt]{article}
+\usepackage{color}
+\usepackage{cite}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\usepackage{pdflscape}        %single page landscape
+                                %mode \begin{landscape} \end{landscape}
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{Sweave}
+\newcommand{\etal}{\textit{et al.}}
+\usepackage{hyperref}  %\hyperref[label_name]{''link text''}
+                       %\hyperlink{label}{anchor caption}
+                       %\hypertarget{label}{link caption}
+\linespread{1.5}
+
+\title{The genetic based ineractions if two foundation species on
+community network structure and stability}
+\author{M.K. Lau}
+%\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\setcounter{tocdepth}{3}  %%activate to number sections
+\tableofcontents
+
+\section{Tasks}
+\begin{enumerate}
+\item network size and stability
+\item modularity and pb removal
+\item network figure 10x3 (control, removal,  difference)
+\item network structure x pb removal effect scatterplot
+\item methods writeup
+\item results write-up and figures
+  \begin{enumerate}
+  \item Composition analyses
+  \item Indicator species analyses
+  \item Newtork structure analyses: 
+    \begin{enumerate}
+    \item Treatment effect (c - e) regressions
+      \begin{enumerate}
+      \item size
+      \item centralization
+      \item modularity
+      \end{enumerate}
+    \item Stability correlation
+      \begin{enumerate}
+      \item size
+      \item centralization
+      \item modularity
+      \end{enumerate}
+    \end{enumerate}
+  \item Network figures
+    \begin{enumerate}
+    \item 3x10 network panel with P. betae highlighted
+    \item Scatterplots for regressions of treatment effect with network statistics
+    \item Scatterplots for regressions of stability with network statistics
+    \end{enumerate}
+  \end{enumerate}
+\end{enumerate}
+
+
+\section{Do arthropod co-occurrence patterns shift in response to a
+  keystone species removal and does this depend on genotype?}
+
+\section{2008}
+
+<<echo=false,results=hide>>=
+  library(xlsx)
+library(gplots)
+library(xtable)
+source('~/cor_nets/CorNets.R')
+                                        #2008 data
+x <- read.xlsx('~/data/pb_removal_data/2008 Keith P betae raw data mtx.xlsx',1,header=FALSE)
+                                        #genotype info
+g <- factor(unlist(x[1,-1])) 
+                                        #position info
+p <- as.character(unlist(x[2,-1])) 
+                                        #fix typos
+p[p=="SSG1-1c"] <- "SSG1-1 c" 
+p[p=="S7-3x"] <- "S7-3 x"
+p[p=="S7-3c"] <- "S7-3 c"
+p[p=="S4-9c"] <- "S4-9 c"
+p[p=="S3-21 x "] <- "S3-21 x"
+p[p=="S3-21 c "] <- "S3-21 c"
+                                        #tree info
+tree <- factor(unlist(lapply(strsplit(p,split=' '),function(x) x[1])))
+                                        #treatment info (x=exclusion,c=control)
+trt <- unlist(lapply(strsplit(p,split=' '),function(x) x[2]))
+trt <- as.numeric(factor(trt))
+                                        #P. betae abundances
+pb. <- read.csv('~/data/pb_removal_data/P betae excl treatment effect 2008.csv')
+pb.data <- data.frame(geno=rep(pb.[,1],2),tree=rep(pb.[,2]),CRT=c(rep('x',nrow(pb.)),rep('c',nrow(pb.))))
+pb.data$tree <- factor(as.character(pb.data$tree))
+pb.data$geno <- factor(as.character(pb.data$geno))
+pb.data <- data.frame(pb.data,pb=c(pb.[,3],pb.[,4]))
+                                        #community data
+com <- x[-nrow(x),]
+rownames(com) <- com[,1]
+com <- t(com[-1:-2,-1])
+com[is.na(com)] <- 0
+com. <- matrix(as.numeric(com),nrow=nrow(com),ncol=ncol(com))
+colnames(com.) <- colnames(com)
+rownames(com.) <- p
+com <- com.
+                                        #pack P. betae for addition to community
+pb.p <- paste(pb.data$tree,pb.data$CRT,sep=' ')
+pb.out <- numeric(length(p))
+pb.out. <- p
+for (i in 1:length(pb.out.)){
+  pb.out[i] <- pb.data$pb[pb.p==pb.out.[i]]
+}
+                                        #add P. betae into the community
+com <- cbind(pb=pb.out,com)
+                                        #remove species with less than nsp total observations
+nsp <- 10
+com <- com[,apply(com,2,sum)>=nsp]
+                                        #check for pairing structure 
+all(table(tree)==2)
+                                        #check for empty observations
+any(apply(com,1,sum)==0)
+                                        #Relativize by species max
+com.rsm <- apply(com,2,function(x) x/max(x))
+                                        #Relativize by species total
+com.rst <- apply(com,2,function(x) x/sum(x))
+                                        #make unique 2008
+c08 <- com
+crsm08 <- com.rsm
+
+@ 
+
+
+\subsection{Compositional Differences from \textit{P. betae} Exclusion}
+
+<<echo=false,>>=
+  library(vegan)
+
+###With P. betae
+adonis(com~tree:trt+g)
+adonis(com.rsm~tree:trt+g)
+adonis(com.rst~tree:trt+g)
+
+###Without P. betae
+adonis(com[,-1]~tree:trt+g)
+adonis(com.rsm[,-1]~tree:trt+g)
+adonis(com.rst[,-1]~tree:trt+g)
+
+@ 
+
+
+<<>>=
+library(mvabund)
+@ 
+
+
+<<echo=false,results=tex>>=
+###Indicator Species Analysis
+library(labdsv)
+                                        #Control
+isp.c <- data.frame(indval=indval(com[trt==1,],g[trt==1])$indval,p=indval(com[trt==1,],g[trt==1])$pval)
+                                        #Exclusion
+isp.x <- data.frame(indval=indval(com[trt==2,],g[trt==2])$indval,p=indval(com[trt==2,],g[trt==2])$pval)
+detach(package:labdsv)
+                                        #tables
+xtable(t(isp.c[isp.c$p<0.07,]))
+xtable(t(isp.x[isp.x$p<0.07,]))
+
+@ 
+
+
+\subsection{Network Models}
+<<echo=false,>>=
+##   library(gam)
+## source('~/cor_nets/CorNets.R')
+## library(pbapply)
+##  ###All
+## net.all <- gamNet(com,prob=0.95)
+## ###Exclusion vs Control
+## net.c <- gamNet(com[trt==1,])
+## net.e <- gamNet(com[trt==2,])
+## ###Genotype
+## net.g <- pblapply(split(data.frame(com),g),gamNet)
+## ###Genotype Exclusion vs Control
+## net.gevc <- pblapply(split(data.frame(com),list(g,trt)),gamNet)
+
+## names(net.g) <- names(split(data.frame(com),g))
+## names(net.gevc) <- names(split(data.frame(com),list(g,trt)))
+
+## ##Write to file
+## dput(net.all,file='net_models/net_all.txt')
+## dput(net.c,file='net_models/net_c.txt')
+## dput(net.e,file='net_models/net_e.txt')
+## dput(net.g,file='net_models/net_g.txt')
+## dput(net.gevc,file='net_models/net_gevc.txt')
+
+@ 
+
+<<echo=false,>>=
+                                        #my.gplot
+my.gplot <- function(x,mode="fruchtermanreingold",lab.cex=1){
+  e.col <- x
+  e.col[x<0] <- 1
+  e.col[x>0] <- 2
+  gplot(abs(x),edge.col=e.col,vertex.cex=0.75,gmode='graph',vertex.col='darkgrey',
+        vertex.border='grey',edge.lwd=abs(x),displaylabels=TRUE,label.cex=lab.cex,
+        mode=mode,)
+}
+                                        #read in GAM network models
+net.all <- dget(file='~/pb_removal/net_models/net_all.txt')
+net.c <- dget(file='~/pb_removal/net_models/net_c.txt')
+net.e <- dget(file='~/pb_removal/net_models/net_e.txt')
+net.g <- dget(file='~/pb_removal/net_models/net_g.txt')
+net.gevc <- dget(file='~/pb_removal/net_models/net_gevc.txt')
+
+@ 
+
+<<>>=
+mgp <- function(x,vp=2,vcol='black',empty.v=TRUE,ep=2,escale=2){
+  x <- abs(x)
+  gam.attach <- any(search()=='package:gam')
+  if (gam.attach){detach(package:gam)}
+  if (any(search()=='package:sna')==FALSE){require('sna',quiet=TRUE)}
+  v.size <- ((abs(degree(x))/max(abs(degree(x))))+1)^vp
+  if (empty.v){
+    vcol <- rep(vcol,nrow(x))
+    vcol[apply(x,1,function(x) sum(abs(x)))==FALSE] <- 'white'
+  }else{}
+  e.size <- ((abs(x)/max(abs(x)))^ep)*escale
+  gplot(abs(x),displaylabels=FALSE,mode='circle',gmode='graph',
+        vertex.cex=v.size,vertex.sides=25,vertex.col=vcol,
+        edge.lwd=e.size,vertex.border='grey',edge.col='grey')
+  if (gam.attach){require('gam',quiet=TRUE)}
+}
+
+par(mfrow=c(5,2))
+for (i in 1:5){
+  mgp(net.gevc[[i]])
+  legend('left',legend=unlist(strsplit(names(net.gevc)[i],split='\\.'))[1],bty='n')
+  mgp(net.gevc[[(i+10)]])
+}
+
+
+
+@ 
+
+<<echo=false,fig=true,results=hide>>=
+library(sna)
+par(mfrow=c(1,1))
+my.gplot(net.all,lab.cex=3)
+
+@ 
+
+<<echo=false,fig=true,results=hide>>=
+par(mfrow=c(1,2))
+my.gplot(net.c,lab.cex=3)
+my.gplot(net.e,lab.cex=3)
+
+@ 
+
+<<echo=false,fig=true,results=hide>>=
+par(mfrow=c(3,4),mar=c(5.1, 4.1, 4.1, 2.1)-1)
+
+for (i in 1:length(net.g)){
+  my.gplot(net.g[[i]],lab.cex=3)
+  title(main=names(net.g)[i],cex.main=5)
+}
+
+@ 
+
+%mark
+\begin{landscape}
+  
+
+<<echo=false,fig=true,results=hide>>=
+net.gevc <- net.gevc[order(names(net.gevc))]
+par(mfrow=c(1,2),mar=c(5.1, 4.1, 4.1, 2.1)-1.5)
+for (i in 1:length(net.gevc)){
+  my.gplot(net.gevc[[i]])
+  title(main=names(net.gevc)[i])
+}
+
+@ 
+
+\end{landscape}
+
+\section{2009}
+
+<<echo=false,results=hide>>=
+  rm(list=ls()[ls()!='c08'&ls()!='crsm08'])
+library(xlsx)
+library(gplots)
+library(xtable)
+                                        #2009 data
+x <- read.xlsx('~/data/pb_removal_data/2009 Keith P betae raw data mtx.xlsx',1,header=FALSE)
+                                        #genotype info
+g <- factor(unlist(x[1,-1])) 
+                                        #position info
+p <- as.character(unlist(x[2,-1])) 
+                                        #fix typos
+p[p=="SSG1-1c"] <- "SSG1-1 c" 
+p[p=="S7-3x"] <- "S7-3 x"
+p[p=="S7-3c"] <- "S7-3 c"
+p[p=="S4-9c"] <- "S4-9 c"
+p[p=="S3-21 x "] <- "S3-21 x"
+p[p=="S3-21 c "] <- "S3-21 c"
+                                        #tree info
+tree <- factor(unlist(lapply(strsplit(p,split=' '),function(x) x[1])))
+                                        #treatment info (x=exclusion,c=control)
+trt <- unlist(lapply(strsplit(p,split=' '),function(x) x[2]))
+trt <- as.numeric(factor(trt))
+                                        #P. betae abundances
+pb. <- read.csv('/Users/Aeolus/data/pb_removal_data/2009_Pbetae_treatment_effect.csv')
+pb.[pb.[,3]==1,3] <- 'c';pb.[pb.[,3]==2,3] <- 'x'
+pb.data <- data.frame(geno=pb.[,1],tree=pb.[,2],CRT=pb.[,3])
+pb.data$tree <- factor(as.character(pb.data$tree))
+pb.data$geno <- factor(as.character(pb.data$geno))
+pb.data <- data.frame(pb.data,pb=pb.[,4])
+                                        #community data
+com <- x[-nrow(x),]
+rownames(com) <- com[,1]
+com <- t(com[-1:-2,-1])
+com[is.na(com)] <- 0
+com. <- matrix(as.numeric(com),nrow=nrow(com),ncol=ncol(com))
+colnames(com.) <- colnames(com)
+rownames(com.) <- p
+com <- com.
+                                        #pack P. betae for addition to community
+pb.p <- paste(pb.data$tree,pb.data$CRT,sep=' ')
+pb.out <- numeric(length(p))
+pb.out. <- p
+for (i in 1:length(pb.out.)){
+  pb.out[i] <- pb.data$pb[pb.p==pb.out.[i]]
+}
+                                        #add P. betae into the community
+com <- cbind(pb=pb.out,com)
+                                        #remove species with less than nsp total observations
+nsp <- 10
+com <- com[,apply(com,2,sum)>=nsp]
+                                        #check for pairing structure 
+all(table(tree)==2)
+                                        #check for empty observations
+any(apply(com,1,sum)==0)
+                                        #Relativize by species max
+com.rsm <- apply(com,2,function(x) x/max(x))
+                                        #Relativize by species total
+com.rst <- apply(com,2,function(x) x/sum(x))
+                                        #make unique 2009
+c09 <- com
+crsm09 <- com.rsm
+
+
+@ 
+
+\subsection{Compositional Differences from \textit{P. betae} Exclusion}
+
+<<echo=false,>>=
+  library(vegan)
+
+clarkeAdjust <- function(x,div=10){
+  if (mode(x)!='numeric'){warning('Matrix is NOT numeric')}
+  .ds <- rep(min(x[x!=0]),nrow(x))/div
+  x <- cbind(x,.ds)
+  return(x)
+}
+
+###With P. betae
+adonis(clarkeAdjust(com)~tree:trt+g)
+adonis(clarkeAdjust(com.rsm)~tree:trt+g)
+adonis(clarkeAdjust(com.rst)~tree:trt+g)
+
+###Without P. betae
+adonis(clarkeAdjust(com[,-1])~tree:trt+g)
+adonis(clarkeAdjust(com.rsm[,-1])~tree:trt+g)
+adonis(clarkeAdjust(com.rst[,-1])~tree:trt+g)
+
+@ 
+
+<<echo=false,results=tex>>=
+###Indicator Species Analysis
+library(labdsv)
+                                        #Control
+isp.c <- data.frame(indval=indval(com[trt==1,],g[trt==1])$indval,p=indval(com[trt==1,],g[trt==1])$pval)
+                                        #Exclusion
+isp.x <- data.frame(indval=indval(com[trt==2,],g[trt==2])$indval,p=indval(com[trt==2,],g[trt==2])$pval)
+detach(package:labdsv)
+                                        #tables
+xtable(t(isp.c[isp.c$p<0.07,]))
+xtable(t(isp.x[isp.x$p<0.05,]))
+
+@ 
+
+\subsection{Co-occurrence Patterns}
+
+<<echo=false,>>=
+  
+  source('~/cor_nets/CorNets.R')
+library(pbapply)
+ ###With P. betae
+
+ ###All
+## ca.all <- CA.results(com)
+##  ###Exclusion vs Control
+## ca.c <- CA.results(com[trt==1,])
+## ca.e <- CA.results(com[trt==2,])
+## ###Genotype
+## ca.g <- pblapply(split(data.frame(com),g),CA.results)
+## ###Genotype Exclusion vs Control
+## ca.gevc <- pblapply(split(data.frame(com),list(g,trt)),CA.results)
+
+###WithOUT P. betae
+###All
+## ca.all. <- CA.results(com[,-1])
+## ###Exclusion vs Control
+## ca.c. <- CA.results(com[trt==1,-1])
+## ca.e. <- CA.results(com[trt==2,-1])
+## ###Genotype
+## ca.g. <- pblapply(split(data.frame(com[,-1]),g),CA.results)
+## ###Genotype Exclusion vs Control
+## ca.gevc. <- pblapply(split(data.frame(com[,-1]),list(g,trt)),CA.results)
+
+###Write to file
+## dput(ca.all,file='ca_results_2009/ca_all.txt')
+## dput(ca.c,file='ca_results_2009/ca_c.txt')
+## dput(ca.e,file='ca_results_2009/ca_e.txt')
+## dput(ca.g,file='ca_results_2009/ca_g.txt')
+## dput(ca.gevc,file='ca_results_2009/ca_gevc.txt')
+## #
+## dput(ca.all.,file='ca_results_2009/ca_all_xpb.txt')
+## dput(ca.c.,file='ca_results_2009/ca_c_xpb.txt')
+## dput(ca.e.,file='ca_results_2009/ca_e_xpb.txt')
+## dput(ca.g.,file='ca_results_2009/ca_g_xpb.txt')
+## dput(ca.gevc.,file='ca_results_2009/ca_gevc_xpb.txt')
+
+@ 
+
+<<echo=false,>>=
+##   old.wd <- getwd()
+##   setwd('ca_results_2009')
+## ca.results <- sapply(dir(),dget)
+## ca.results.l2 <- ca.results[1:6]
+## ca.results.lgt2 <- ca.results[7:10]
+## ca.catl2 <- lapply(ca.results.l2,function(x) x$cat)
+## ca.cat.lgt2 <- lapply(ca.results.lgt2,function(x) lapply(x,function(x) x$cat))
+## ca.cat.lgt2 <- lapply(ca.cat.lgt2,function(x) do.call(rbind,x))
+## ca.cat <- list(ca.catl2,ca.cat.lgt2)
+## ca.l2 <- do.call(rbind,ca.cat[[1]])
+## ca.lgt2 <- do.call(rbind,ca.cat[[2]])
+## rownames(ca.lgt2) <- paste(rownames(ca.lgt2),c(rep(names(ca.cat.lgt2)[1],nrow(ca.cat.lgt2[[1]])),
+##                                                rep(names(ca.cat.lgt2)[2],nrow(ca.cat.lgt2[[2]])),
+##                                                rep(names(ca.cat.lgt2)[3],nrow(ca.cat.lgt2[[3]])),
+##                                                rep(names(ca.cat.lgt2)[4],nrow(ca.cat.lgt2[[4]]))),sep='')
+## ca.cat <- rbind(ca.l2,ca.lgt2)
+## setwd(old.wd)
+
+@ 
+
+<<echo=false,results=tex>>=
+
+## dget('ca_results_2009/ca_all.txt')[[2]]
+## xtable(ca.cat[1:22,])
+## xtable(ca.cat[23:44,])
+## xtable(ca.cat[45:66,])
+
+@ 
+
+\subsection{Network Models}
+
+<<echo=false,>>=
+##   library(gam)
+## source('~/cor_nets/CorNets.R')
+## library(pbapply)
+##  ###All
+## net.all <- gamNet(com,prob=0.95)
+## ###Exclusion vs Control
+## net.c <- gamNet(com[trt==1,])
+## net.e <- gamNet(com[trt==2,])
+## ###Genotype
+## net.g <- pblapply(split(data.frame(com),g),gamNet)
+## ###Genotype Exclusion vs Control
+## net.gevc <- pblapply(split(data.frame(com),list(g,trt)),gamNet)
+##                                         #
+## names(net.g) <- names(split(data.frame(com),g))
+## names(net.gevc) <- names(split(data.frame(com),list(g,trt)))
+##                                         #
+## detach(package:gam)
+##                                         #Write to file
+## dput(net.all,file='net_models_2009/net_all.txt')
+## dput(net.c,file='net_models_2009/net_c.txt')
+## dput(net.e,file='net_models_2009/net_e.txt')
+## dput(net.g,file='net_models_2009/net_g.txt')
+## dput(net.gevc,file='net_models_2009/net_gevc.txt')
+
+@ 
+
+<<echo=false,>>=
+detach(package:gam)
+                                        #my.gplot
+my.gplot <- function(x,mode="fruchtermanreingold"){
+  e.col <- x
+  e.col[x<0] <- 1
+  e.col[x>0] <- 2
+  gplot(abs(x),edge.col=e.col,vertex.cex=0.75,gmode='graph',vertex.col='darkgrey',
+        vertex.border='grey',edge.lwd=abs(x),displaylabels=TRUE,label.cex=0.55,
+        mode=mode)
+}
+                                        #read in GAM network models
+net.all <- dget(file='net_models_2009/net_all.txt')
+net.c <- dget(file='net_models_2009/net_c.txt')
+net.e <- dget(file='net_models_2009/net_e.txt')
+net.g <- dget(file='net_models_2009/net_g.txt')
+net.gevc <- dget(file='net_models_2009/net_gevc.txt')
+
+@ 
+
+<<echo=false,fig=true,results=hide>>=
+library(sna)
+par(mfrow=c(1,1))
+my.gplot(net.all)
+
+
+@ 
+
+<<echo=false,fig=true,results=hide>>=
+par(mfrow=c(1,2))
+my.gplot(net.c)
+my.gplot(net.e)
+
+@ 
+
+<<echo=false,fig=true,results=hide>>=
+par(mfrow=c(3,4),mar=c(5.1, 4.1, 4.1, 2.1)-1.5)
+par(mfrow=c(1,1))
+for (i in 1:length(net.g)){
+  my.gplot(net.g[[i]])
+  title(main=names(net.g)[i])
+}
+
+@ 
+
+<<echo=false,fig=true,results=hide>>=
+net.gevc <- net.gevc[order(names(net.gevc))]
+par(mfrow=c(1,2),mar=c(5.1, 4.1, 4.1, 2.1)-1.5)
+for (i in 1:length(net.gevc)){
+  my.gplot(net.gevc[[i]])
+  title(main=names(net.gevc)[i])
+}
+
+@ 
+
+
+\section{2008 & 2009}
+
+\subsection{Look at correlation between 2008 and 2009}
+
+<<echo=false,>>=
+d08 <- vegdist(clarkeAdjust(c08))
+d09 <- vegdist(clarkeAdjust(c09))
+mantel(d08,d09)
+
+@ 
+
+\subsection{Combined}
+
+\section{2008}
+
+<<echo=false,results=hide>>=
+  source('~/cor_nets/CorNets.R')
+library(xlsx)
+library(gplots)
+library(xtable)
+nsp <- 10 #minimum species total
+                                        #load 2008
+x <- read.xlsx('~/data/pb_removal_data/2008 Keith P betae raw data mtx.xlsx',1,header=FALSE)
+                                        #genotype info
+g08 <- factor(unlist(x[1,-1])) 
+                                        #position info
+p <- as.character(unlist(x[2,-1])) 
+                                        #fix typos
+p[p=="SSG1-1c"] <- "SSG1-1 c" 
+p[p=="S7-3x"] <- "S7-3 x"
+p[p=="S7-3c"] <- "S7-3 c"
+p[p=="S4-9c"] <- "S4-9 c"
+p[p=="S3-21 x "] <- "S3-21 x"
+p[p=="S3-21 c "] <- "S3-21 c"
+                                        #tree info
+tree08 <- factor(unlist(lapply(strsplit(p,split=' '),function(x) x[1])))
+                                        #treatment info (x=exclusion,c=control)
+trt <- unlist(lapply(strsplit(p,split=' '),function(x) x[2]))
+trt08 <- as.numeric(factor(trt))
+                                        #P. betae abundances
+pb. <- read.csv('~/data/pb_removal_data/P betae excl treatment effect 2008.csv')
+pb.data <- data.frame(geno=rep(pb.[,1],2),tree=rep(pb.[,2]),CRT=c(rep('x',nrow(pb.)),rep('c',nrow(pb.))))
+pb.data$tree <- factor(as.character(pb.data$tree))
+pb.data$geno <- factor(as.character(pb.data$geno))
+pb.data <- data.frame(pb.data,pb=c(pb.[,3],pb.[,4]))
+                                        #community data
+com <- x[-nrow(x),]
+rownames(com) <- com[,1]
+com <- t(com[-1:-2,-1])
+com[is.na(com)] <- 0
+com. <- matrix(as.numeric(com),nrow=nrow(com),ncol=ncol(com))
+colnames(com.) <- colnames(com)
+rownames(com.) <- p
+com <- com.
+                                        #pack P. betae for addition to community
+pb.p <- paste(pb.data$tree,pb.data$CRT,sep=' ')
+pb.out <- numeric(length(p))
+pb.out. <- p
+for (i in 1:length(pb.out.)){
+  pb.out[i] <- pb.data$pb[pb.p==pb.out.[i]]
+}
+                                        #add P. betae into the community
+com08 <- cbind(pb=pb.out,com)
+                                        #load 2009
+                                        #2009 data
+x <- read.xlsx('~/data/pb_removal_data/2009 Keith P betae raw data mtx.xlsx',1,header=FALSE)
+                                        #genotype info
+g09 <- factor(unlist(x[1,-1])) 
+                                        #position info
+p <- as.character(unlist(x[2,-1])) 
+                                        #fix typos
+p[p=="SSG1-1c"] <- "SSG1-1 c" 
+p[p=="S7-3x"] <- "S7-3 x"
+p[p=="S7-3c"] <- "S7-3 c"
+p[p=="S4-9c"] <- "S4-9 c"
+p[p=="S3-21 x "] <- "S3-21 x"
+p[p=="S3-21 c "] <- "S3-21 c"
+                                        #tree info
+tree09 <- factor(unlist(lapply(strsplit(p,split=' '),function(x) x[1])))
+                                        #treatment info (x=exclusion,c=control)
+trt <- unlist(lapply(strsplit(p,split=' '),function(x) x[2]))
+trt09 <- as.numeric(factor(trt))
+                                        #P. betae abundances
+pb. <- read.csv('/Users/Aeolus/data/pb_removal_data/2009_Pbetae_treatment_effect.csv')
+pb.[pb.[,3]==1,3] <- 'c';pb.[pb.[,3]==2,3] <- 'x'
+pb.data <- data.frame(geno=pb.[,1],tree=pb.[,2],CRT=pb.[,3])
+pb.data$tree <- factor(as.character(pb.data$tree))
+pb.data$geno <- factor(as.character(pb.data$geno))
+pb.data <- data.frame(pb.data,pb=pb.[,4])
+                                        #community data
+com <- x[-nrow(x),]
+rownames(com) <- com[,1]
+com <- t(com[-1:-2,-1])
+com[is.na(com)] <- 0
+com. <- matrix(as.numeric(com),nrow=nrow(com),ncol=ncol(com))
+colnames(com.) <- colnames(com)
+rownames(com.) <- p
+com <- com.
+                                        #pack P. betae for addition to community
+pb.p <- paste(pb.data$tree,pb.data$CRT,sep=' ')
+pb.out <- numeric(length(p))
+pb.out. <- p
+for (i in 1:length(pb.out.)){
+  pb.out[i] <- pb.data$pb[pb.p==pb.out.[i]]
+}
+                                        #add P. betae into the community
+com09 <- cbind(pb=pb.out,com)
+                                        #checks
+all(g08==g09)
+all(tree08==tree09)
+all(trt08==trt09)
+                                        #merge species
+missing.08 <- colnames(com09)[colnames(com09)%in%colnames(com08)==FALSE]
+missing.09 <- colnames(com08)[colnames(com08)%in%colnames(com09)==FALSE]
+missmat.08 <- array(0,dim=c(nrow(com08),length(missing.08)))
+missmat.09 <- array(0,dim=c(nrow(com09),length(missing.09)))
+colnames(missmat.08) <- missing.08
+colnames(missmat.09) <- missing.09
+com08 <- data.frame(com08,missmat.08)
+com09 <- data.frame(com09,missmat.09)
+com08 <- com08[,order(colnames(com08))]
+com09 <- com09[,order(colnames(com09))]
+                                        #paste together 08 and 09
+com <- as.matrix(rbind(com08,com09))
+com <- com[,apply(com,2,sum)>=nsp] # remove less than nsp
+                                        #create a year vector
+year <- factor(c(rep('2008',nrow(com08)),rep('2009',nrow(com09))))
+                                        #create factor vectors
+g <- factor(c(as.character(g08),as.character(g09)))
+trt <- c((trt08),(trt09))
+tree <- factor(c(as.character(tree08),as.character(tree09)))
+                                        #relativize by species max
+com.rsm <- apply(com,2,function(x) x/max(x))
+
+@ 
+
+<<>>=
+  library(vegan)
+adonis(clarkeAdjust(com)~tree:trt*g*year)
+adonis(clarkeAdjust(com.rsm)~tree:trt*g*year)
+adonis(clarkeAdjust(com[,colnames(com)!='pb'])~tree:trt*g*year)
+adonis(clarkeAdjust(com.rsm[,colnames(com.rsm)!='pb'])~tree:trt*g*year)
+
+@ 
+
+\subsection{Indicator Species}
+
+<<>>=
+library(labdsv)
+isa.c <- indval(com[trt==1,],g[trt==1])
+isa.e <- indval(com[trt==2,],g[trt==2])
+detach(package:labdsv)
+isa.c <- t(cbind(isa.c$indval,pval=isa.c$pval))
+isa.e <- t(cbind(isa.e$indval,pval=isa.e$pval))
+
+@ 
+
+<<results=tex>>=
+xtable(isa.c[,isa.c[nrow(isa.c),]<=0.05])
+xtable(isa.e[,isa.e[nrow(isa.e),]<=0.05])
+
+@ 
+
+\subsection{Network Models}
+
+<<fig=true>>=
+  library(network)
+all.net <- gamNet(com)
+my.netplot <- function(x,com){
+  plot(as.network(abs(x)),displaylabels=TRUE,label.cex=0.5,
+       edge.lwd=abs(x),usearrows=FALSE,edge.col='grey',vertex.col='darkgrey',
+       vertex.cex=(apply(com,2,sum)/sum(apply(com,2,sum))+1)^3,
+       vertex.border='grey')
+}
+my.netplot(all.net,com)
+
+@ 
+
+<<fig=true,echo=false>>=
+net.c <- gamNet(com[trt==1,])
+net.e <- gamNet(com[trt==2,])
+par(mfrow=c(1,2))
+my.netplot(net.c,com[trt==1,])
+my.netplot(net.e,com[trt==2,])
+
+@ 
+
+%Genotype by trt
+<<>>=
+## gt.nets <- lapply(split(data.frame(com),list(g,trt)),gamNet)
+## dput(gt.nets,'net_models_combined/gtnets.txt')
+gt.nets <- dget('net_models_combined/gtnets.txt')
+gt.nets <- gt.nets[order(names(gt.nets))]
+gt.com <- split(data.frame(com),list(g,trt))
+gt.com <- gt.com[order(names(gt.com))]
+par(mfrow=c(1,2))
+for (i in 1:length(gt.nets)){
+  my.netplot(gt.nets[[i]],gt.com[[i]])
+  title(main=names(gt.nets)[i])
+}
+
+@ 
+
+<<>>=
+require(network)
+require(sna)
+
+plot.net <- function(x,.com,mode='circle',labels=FALSE){
+  c.names <- colnames(x)
+  c.lab <- 1:length(c.names)
+  central. <- sna::degree(abs(x))
+  central. <- central./max(central.)
+  v.col <-(apply(.com,2,sum)/sum(apply(.com,2,sum))+1)^2
+  v.col[v.col==min(v.col)] <- 0
+  v.col <- grey(1-(v.col/max(v.col)))
+  e.col <- x
+  e.col[x<0] <- 'lightgrey'
+  e.col[x>0] <- 'darkgrey'
+  e.col[x==0] <- 'white'
+  plot(as.network(abs(x)),displaylabels=labels,label=c.lab,label.cex=0.5,
+       edge.lwd=(abs(x)/max(abs(x)))*0.75,usearrows=FALSE,edge.col=e.col,
+       vertex.col=v.col,vertex.cex=(central.+1)^2,
+       vertex.border='darkgrey',mode=mode)
+}
+                                        #
+fmf <- function(n){
+### Find minimum factors
+  d.m <- ((1:n)%*%t(1:n))
+  v <- (apply(d.m,1,function(x,n) if (length((1:length(x))[x==n])>0){(1:length(x))[x==n]}else{0},n=n))
+  v. <- (1:n)[v!=0]
+  v <- v[v!=0]
+  dif <- abs(v-v.)
+  return(sort(c(v[dif==min(dif)][1],v.[dif==min(dif)][1])))
+}
+                                        #
+ce <- unlist(lapply(strsplit(names(gt.nets),split='\\.'),function(x) x[2]))
+ce[ce=='1'] <- 'C';ce[ce=='2'] <- 'E'
+par(mfrow=sort(fmf(length(gt.nets)),decreasing=TRUE),mar=c(5.1, 4.1, 4.1, 2.1)-c(4.05,4,3,2.1))
+for (i in 1:length(gt.nets)){
+  plot.net(gt.nets[[i]],.com=gt.com[[i]])
+  title(main=paste(lapply(strsplit(names(gt.nets),split='\\.'),
+          function(x) x[1])[[i]],ce[i]))
+}
+                                        #difference networks
+gtn.1 <- gt.nets[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='1']
+gtn.2 <- gt.nets[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='2']
+gtn.d <- list()
+for (i in 1:length(gtn.1)){
+  gtn.d[[i]] <- gtn.1[[i]]-gtn.2[[i]]
+  names(gtn.d)[i] <- strsplit(names(gtn.1)[i],split='\\.')[[1]][1]
+}
+                                        #round to two digits
+gtn.d <- lapply(gtn.d,round,digits=2)
+                                        #
+par(mfrow=sort(fmf(length(gtn.d)),decreasing=FALSE),mar=c(5.1, 4.1, 4.1, 2.1)-c(4,3,3,2.1))
+for (i in 1:length(gtn.d)){
+  plot.net(gtn.d[[i]],.com=gt.com[[i]])
+  title(main=names(gtn.d)[i])
+}
+
+names(gtn.d)
+i <- (1:length(gtn.d))[names(gtn.d)=='HE-10']
+par(mfrow=c(1,3))
+plot.net(gtn.d[[i]],.com=data.frame(gt.com[names(gt.com)==names(gtn.1)[i]])-data.frame(gt.com[names(gt.com)==names(gtn.2)[i]]));  title(main=names(gtn.d)[i])
+plot.net(gtn.1[[i]],.com=data.frame(gt.com[names(gt.com)==names(gtn.1)[i]]));  title(main=names(gtn.1)[i])
+plot.net(gtn.2[[i]],.com=data.frame(gt.com[names(gt.com)==names(gtn.2)[i]]));  title(main=names(gtn.2)[i])
+
+@ 
+
+\section{Final Analyses}
+
+\subsection{PB Effect on Network Structure}
+
+<<>>=
+                                        #euclidean distances between removal and control
+gtn.ed <- unlist(lapply(gtn.d,function(x) sqrt(sum(x^2))))
+gtn.ed. <- unlist(lapply(gtn.d,function(x) sqrt(sum(x[rownames(x)!='pb',colnames(x)!='pb']^2)))) #no pb connections
+pb.1 <- unlist(lapply(gt.com[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='1'],function(x)
+             mean(x[,colnames(x)=='pb'])))
+pb.2 <- unlist(lapply(gt.com[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='2'],function(x)
+             mean(x[,colnames(x)=='pb'])))
+pb.d <- pb.1-pb.2
+                                        #analyses
+par(mfrow=c(1,1))
+plot(pb.1,pb.2)
+abline(lm(pb.2~pb.1))
+                                        #
+par(mfrow=c(1,2))
+plot(gtn.ed~pb.d,ylim=c(0,60))
+abline(lm(gtn.ed~pb.d))
+plot(gtn.ed.~pb.d,ylim=c(0,60))
+abline(lm(gtn.ed.~pb.d))
+summary(lm(gtn.ed.~pb.d))
+                                        #
+
+@ 
+
+\subsection{Structural Differences}
+<<>>=
+detach(package::igraph)
+
+pb.d <- pb.1-pb.2
+                                        #degree
+d.1 <- unlist(lapply(gtn.1,function(x) sum(abs(sign(x)))/2))
+d.2 <- unlist(lapply(gtn.2,function(x) sum(abs(sign(x)))/2))
+d.d <- d.1 - d.2
+                                       #centralization
+c.1 <- unlist(lapply(gtn.1,function(x) centralization(x,degree)))
+c.2 <- unlist(lapply(gtn.2,function(x) centralization(x,degree)))
+c.d <- c.1-c.2
+                                        #modularity
+library(igraph)
+                                        #get the largest component of each graph
+lsc <- function(x){
+                                        #largest subcomponent
+  y <- clusters(graph.adjacency(x,weighted=TRUE,mode='directed'),mode='strong')
+  clust <- (0:max(y$membership))[y$csize==max(y$csize)]
+  return(x[y$membership==clust,y$membership==clust])
+}
+
+mod.1 <- lapply(gtn.1,function(x) spinglass.community(graph.adjacency(lsc(x),weighted=TRUE,mode='directed')))
+mod.2 <- lapply(gtn.2,function(x) spinglass.community(graph.adjacency(lsc(x),weighted=TRUE,mode='directed')))
+mod.1 <- lapply(mod.1,function(x) x$modularity)
+mod.2 <- lapply(mod.2,function(x) x$modularity)
+m.d <- mod.1 - mod.2
+detach(package:igraph,force=TRUE)
+                                        #
+par(mfrow=c(1,3))
+plot(d.d~pb.d)
+abline(lm(d.d~pb.d))
+plot(c.d~pb.d)
+abline(lm(c.d~pb.d))
+plot(mod.d~pb.d)
+abline(lm(mod.d~pb.d))
+                                        #
+summary(lm(d.d~pb.d))
+summary(lm(c.d~pb.d))
+summary(lm((m.d)~pb.d))
+
+@ 
+
+
+\subsection{Community Distance}
+
+<<>>=
+                                        #conform community matrices
+cn08 <- colnames(c08)
+cn09 <- colnames(c09)
+cn8m9 <- cn08[cn08%in%cn09==FALSE]
+cn9m8 <- cn09[cn09%in%cn08==FALSE]
+add08 <- matrix(0,ncol=length(cn9m8),nrow=nrow(c08))
+colnames(add08) <- cn9m8
+add09 <- matrix(0,ncol=length(cn8m9),nrow=nrow(c09))
+colnames(add09) <- cn8m9
+add08 <- cbind(c08,add08)
+add09 <- cbind(c09,add09)
+add08 <- add08[,order(colnames(add08))]
+add09 <- add09[,order(colnames(add09))]
+c0809 <- rbind(add08,add09)
+                                        #
+yr <- gl(2,nrow(c08))
+d0809 <- as.matrix(vegdist(clarkeAdjust(c0809)))
+d.yr <- diag(d0809[yr==1,yr==2])
+s.yr <- 1-d.yr
+                                        #stability by trt
+trt <- factor(sapply(names(d.yr),function(x) strsplit(x,split=' ')[[1]][2]))
+library(gplots)
+se <- function(x){sd(x)/sqrt(length(x))}
+barplot2(tapply(s.yr,trt,mean),plot.ci=TRUE,ci.u=tapply(s.yr,trt,mean)+tapply(s.yr,trt,se),
+         ci.l=tapply(s.yr,trt,mean)-tapply(s.yr,trt,se),ylim=c(0,0.5),ylab='Stability')
+summary(aov(s.yr~trt))
+                                        #correlations with network stats
+                                        #diversity
+r.gm <- tapply(apply(cbind(apply(c08,1,function(x) length(x[x!=0])),apply(c09,1,function(x) length(x[x!=0]))),1,mean),g09,mean)
+                                        #mean network distance by genotype
+s.gm <- tapply(s.yr,g09,mean)
+summary(lm(s.gm~d.d))
+summary(lm((s.gm)~c.d))
+plot(s.gm~c.d)
+abline(lm(s.gm~c.d))
+summary(lm(s.gm~m.d))
+plot(r.gm~c.d)
+abline(lm(r.gm~c.d))
+summary(lm(r.gm~c.d))
+
+@ 
+
+<<>>=
+d.g <- factor(sapply(names(d.12),function(x) strsplit(x,split='\\.')[[1]][1]))
+d.trt <- factor(sapply(names(d.12),function(x) strsplit(x,split='\\.')[[1]][2]))
+d.g
+summary()
+aov(d.12~d.trt)
+summary(aov(as.numeric(d.12)~d.g+Error(d.trt:d.g)))
+library(nlme)
+lme(as.numeric(d.12)~d.trt)
+
+
+@ 
+
+
+
+%%Activate for bibtex bibliography
+\bibliographystyle{plain}
+\bibliography{/Users/Aeolus/Documents/bibtex/biblib}
+
+
+\end{document}  
+
+

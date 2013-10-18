@@ -1,0 +1,29 @@
+###Analysis of Art's Pemphigus removal data
+###Current file started 18 Oct 2013
+library(xlsx)
+
+x <- read.xlsx('../data/2008 Keith P betae raw data mtx.xlsx',1,header=FALSE)
+                                        #genotype info
+g <- factor(unlist(x[1,-1])) 
+                                        #position info
+p <- as.character(unlist(x[2,-1])) 
+                                        #fix typos
+p[p=="SSG1-1c"] <- "SSG1-1 c" 
+p[p=="S7-3x"] <- "S7-3 x"
+p[p=="S7-3c"] <- "S7-3 c"
+p[p=="S4-9c"] <- "S4-9 c"
+p[p=="S3-21 x "] <- "S3-21 x"
+p[p=="S3-21 c "] <- "S3-21 c"
+                                        #tree info
+tree <- factor(unlist(lapply(strsplit(p,split=' '),function(x) x[1])))
+                                        #treatment info (x=exclusion,c=control)
+trt <- unlist(lapply(strsplit(p,split=' '),function(x) x[2]))
+trt <- as.numeric(factor(trt))
+                                        #P. betae abundances
+pb. <- read.csv('~/data/pb_removal_data/P betae excl treatment effect 2008.csv')
+pb.data <- data.frame(geno=rep(pb.[,1],2),tree=rep(pb.[,2]),CRT=c(rep('x',nrow(pb.)),rep('c',nrow(pb.))))
+pb.data$tree <- factor(as.character(pb.data$tree))
+pb.data$geno <- factor(as.character(pb.data$geno))
+pb.data <- data.frame(pb.data,pb=c(pb.[,3],pb.[,4]))
+###
+###

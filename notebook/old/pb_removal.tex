@@ -1,0 +1,4730 @@
+\documentclass[12pt]{article}
+\usepackage{color}
+\usepackage{cite}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\usepackage{pdflscape}        %single page landscape
+                                %mode \begin{landscape} \end{landscape}
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{Sweave}
+\newcommand{\etal}{\textit{et al.}}
+\usepackage{hyperref}  %\hyperref[label_name]{''link text''}
+                       %\hyperlink{label}{anchor caption}
+                       %\hypertarget{label}{link caption}
+\linespread{1.5}
+
+\title{The genetic based ineractions if two foundation species on
+community network structure and stability}
+\author{M.K. Lau}
+%\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\setcounter{tocdepth}{3}  %%activate to number sections
+\tableofcontents
+
+\section{Tasks}
+\begin{enumerate}
+\item network size and stability
+\item modularity and pb removal
+\item network figure 10x3 (control, removal,  difference)
+\item network structure x pb removal effect scatterplot
+\item methods writeup
+\item results write-up and figures
+  \begin{enumerate}
+  \item Composition analyses
+  \item Indicator species analyses
+  \item Newtork structure analyses: 
+    \begin{enumerate}
+    \item Treatment effect (c - e) regressions
+      \begin{enumerate}
+      \item size
+      \item centralization
+      \item modularity
+      \end{enumerate}
+    \item Stability correlation
+      \begin{enumerate}
+      \item size
+      \item centralization
+      \item modularity
+      \end{enumerate}
+    \end{enumerate}
+  \item Network figures
+    \begin{enumerate}
+    \item 3x10 network panel with P. betae highlighted
+    \item Scatterplots for regressions of treatment effect with network statistics
+    \item Scatterplots for regressions of stability with network statistics
+    \end{enumerate}
+  \end{enumerate}
+\end{enumerate}
+
+
+\section{Do arthropod co-occurrence patterns shift in response to a
+  keystone species removal and does this depend on genotype?}
+
+\section{2008}
+
+
+
+
+\subsection{Compositional Differences from \textit{P. betae} Exclusion}
+
+\begin{Schunk}
+\begin{Soutput}
+Call:
+adonis(formula = com ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    3.9502 0.43891  4.1310 0.25205  0.001 ***
+tree:trt  40    8.5346 0.21337  2.0082 0.54457  0.001 ***
+Residuals 30    3.1874 0.10625         0.20338           
+Total     79   15.6722                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = com.rsm ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    3.8160 0.42400  2.3743 0.19792  0.001 ***
+tree:trt  40   10.1069 0.25267  1.4149 0.52421  0.001 ***
+Residuals 30    5.3572 0.17857         0.27786           
+Total     79   19.2801                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = com.rst ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    4.2684 0.47427  1.9143 0.16715  0.001 ***
+tree:trt  40   13.8349 0.34587  1.3961 0.54178  0.001 ***
+Residuals 30    7.4325 0.24775         0.29106           
+Total     79   25.5358                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = com[, -1] ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    3.7806 0.42006  3.7258 0.25459  0.001 ***
+tree:trt  40    7.6866 0.19216  1.7044 0.51763  0.001 ***
+Residuals 30    3.3823 0.11274         0.22777           
+Total     79   14.8495                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = com.rsm[, -1] ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    3.7866 0.42074  2.3063 0.19620  0.001 ***
+tree:trt  40   10.0404 0.25101  1.3759 0.52023  0.001 ***
+Residuals 30    5.4729 0.18243         0.28357           
+Total     79   19.3000                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = com.rst[, -1] ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    4.2200 0.46889  1.8372 0.16402  0.001 ***
+tree:trt  40   13.8526 0.34632  1.3569 0.53840  0.001 ***
+Residuals 30    7.6567 0.25522         0.29759           
+Total     79   25.7294                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\end{Schunk}
+
+% latex table generated in R 2.15.0 by xtable 1.7-0 package
+% Thu Aug 23 18:08:07 2012
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrrrr}
+  \hline
+ & BEB & Phylla & serp.lf.mnr. & Tip.roller \\ 
+  \hline
+indval.996 & 0.09 & 0.16 & 0.00 & 0.01 \\ 
+  indval.1000 & 0.18 & 0.05 & 0.31 & 0.02 \\ 
+  indval.1008 & 0.26 & 0.16 & 0.03 & 0.07 \\ 
+  indval.1017 & 0.02 & 0.10 & 0.00 & 0.28 \\ 
+  indval.1020 & 0.08 & 0.09 & 0.02 & 0.01 \\ 
+  indval.coal.3 & 0.08 & 0.06 & 0.02 & 0.05 \\ 
+  indval.HE.10 & 0.06 & 0.11 & 0.09 & 0.01 \\ 
+  indval.Rm.2 & 0.05 & 0.02 & 0.06 & 0.08 \\ 
+  indval.T.15 & 0.02 & 0.01 & 0.00 & 0.00 \\ 
+  indval.WC.5 & 0.05 & 0.22 & 0.06 & 0.21 \\ 
+  p & 0.05 & 0.07 & 0.05 & 0.06 \\ 
+   \hline
+\end{tabular}
+\end{center}
+\end{table}% latex table generated in R 2.15.0 by xtable 1.7-0 package
+% Thu Aug 23 18:08:07 2012
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrr}
+  \hline
+ & Lfhppr..fisheye. & midge \\ 
+  \hline
+indval.996 & 0.15 & 0.00 \\ 
+  indval.1000 & 0.02 & 0.00 \\ 
+  indval.1008 & 0.14 & 0.02 \\ 
+  indval.1017 & 0.26 & 0.55 \\ 
+  indval.1020 & 0.01 & 0.02 \\ 
+  indval.coal.3 & 0.04 & 0.00 \\ 
+  indval.HE.10 & 0.04 & 0.00 \\ 
+  indval.Rm.2 & 0.04 & 0.02 \\ 
+  indval.T.15 & 0.04 & 0.00 \\ 
+  indval.WC.5 & 0.11 & 0.00 \\ 
+  p & 0.01 & 0.02 \\ 
+   \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Network Models}
+
+
+\includegraphics{pb_removal-006}
+
+\includegraphics{pb_removal-007}
+
+\includegraphics{pb_removal-008}
+
+%mark
+\begin{landscape}
+  
+
+\includegraphics{pb_removal-009}
+
+\end{landscape}
+
+\section{2009}
+
+
+\subsection{Compositional Differences from \textit{P. betae} Exclusion}
+
+\begin{Schunk}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com) ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    4.8919 0.54355  5.3364 0.26805  0.001 ***
+tree:trt  40   10.3022 0.25755  2.5286 0.56451  0.001 ***
+Residuals 30    3.0557 0.10186         0.16744           
+Total     79   18.2499                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com.rsm) ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    4.7449 0.52721  2.9847 0.20917  0.001 ***
+tree:trt  40   12.6405 0.31601  1.7891 0.55723  0.001 ***
+Residuals 30    5.2991 0.17664         0.23360           
+Total     79   22.6845                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com.rst) ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    5.0055 0.55617  2.5423 0.19613  0.001 ***
+tree:trt  40   13.9523 0.34881  1.5944 0.54670  0.001 ***
+Residuals 30    6.5629 0.21876         0.25716           
+Total     79   25.5207                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com[, -1]) ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    3.7780 0.41978  3.8166 0.22204  0.001 ***
+tree:trt  40    9.9378 0.24844  2.2589 0.58405  0.001 ***
+Residuals 30    3.2996 0.10999         0.19392           
+Total     79   17.0154                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com.rsm[, -1]) ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    4.7291 0.52546  2.9941 0.20686  0.001 ***
+tree:trt  40   12.8674 0.32169  1.8330 0.56284  0.001 ***
+Residuals 30    5.2649 0.17550         0.23030           
+Total     79   22.8615                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com.rst[, -1]) ~ tree:trt + g) 
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g          9    5.0233 0.55814  2.5712 0.19468  0.001 ***
+tree:trt  40   14.2668 0.35667  1.6431 0.55293  0.001 ***
+Residuals 30    6.5122 0.21707         0.25239           
+Total     79   25.8022                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\end{Schunk}
+
+% latex table generated in R 2.15.0 by xtable 1.7-0 package
+% Thu Aug 23 18:08:17 2012
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrr}
+  \hline
+ & Anthocorid & Tip.roller \\ 
+  \hline
+indval.996 & 0.00 & 0.01 \\ 
+  indval.1000 & 0.03 & 0.15 \\ 
+  indval.1008 & 0.00 & 0.05 \\ 
+  indval.1017 & 0.38 & 0.37 \\ 
+  indval.1020 & 0.00 & 0.01 \\ 
+  indval.coal.3 & 0.00 & 0.01 \\ 
+  indval.HE.10 & 0.00 & 0.15 \\ 
+  indval.Rm.2 & 0.10 & 0.01 \\ 
+  indval.T.15 & 0.03 & 0.04 \\ 
+  indval.WC.5 & 0.03 & 0.02 \\ 
+  p & 0.03 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{center}
+\end{table}% latex table generated in R 2.15.0 by xtable 1.7-0 package
+% Thu Aug 23 18:08:17 2012
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rr}
+  \hline
+ & Lf.tier \\ 
+  \hline
+indval.996 & 0.00 \\ 
+  indval.1000 & 0.07 \\ 
+  indval.1008 & 0.02 \\ 
+  indval.1017 & 0.41 \\ 
+  indval.1020 & 0.00 \\ 
+  indval.coal.3 & 0.00 \\ 
+  indval.HE.10 & 0.00 \\ 
+  indval.Rm.2 & 0.00 \\ 
+  indval.T.15 & 0.00 \\ 
+  indval.WC.5 & 0.02 \\ 
+  p & 0.04 \\ 
+   \hline
+\end{tabular}
+\end{center}
+\end{table}
+\subsection{Co-occurrence Patterns}
+
+\begin{Schunk}
+\begin{Soutput}
+tnet: Analysis of Weighted, Two-mode, and Longitudinal networks.
+Type ?tnet for help.
+----------------------------------------------------------
+This is bipartite 1.17. 
+For latest additions type: ?bipartite.
+For citation please type: citation("bipartite").
+Have a nice time plotting and analysing two-mode networks.
+----------------------------------------------------------
+
+[1] "lasso"
+\end{Soutput}
+\end{Schunk}
+
+
+
+\subsection{Network Models}
+
+
+
+\includegraphics{pb_removal-018}
+
+\includegraphics{pb_removal-019}
+
+\includegraphics{pb_removal-020}
+
+\includegraphics{pb_removal-021}
+
+
+\section{2008 & 2009}
+
+\subsection{Look at correlation between 2008 and 2009}
+
+\begin{Schunk}
+\begin{Soutput}
+Mantel statistic based on Pearson's product-moment correlation 
+
+Call:
+mantel(xdis = d08, ydis = d09) 
+
+Mantel statistic r: 0.3363 
+      Significance: 0.001 
+
+Empirical upper confidence limits of r:
+   90%    95%  97.5%    99% 
+0.0556 0.0726 0.0873 0.1071 
+
+Based on 999 permutations
+\end{Soutput}
+\end{Schunk}
+
+\subsection{Combined}
+
+\section{2008}
+
+
+\begin{Schunk}
+\begin{Sinput}
+>   library(vegan)
+> adonis(clarkeAdjust(com)~tree:trt*g*year)
+\end{Sinput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com) ~ tree:trt * g * year) 
+
+Terms added sequentially (first to last)
+
+               Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g               9     6.756  0.7506   6.956 0.17765  0.001 ***
+year            1     3.507  3.5074  32.501 0.09223  0.001 ***
+tree:trt       40    12.219  0.3055   2.831 0.32132  0.001 ***
+g:year          9     2.093  0.2325   2.154 0.05503  0.001 ***
+tree:trt:year  40     6.978  0.1744   1.616 0.18350  0.001 ***
+Residuals      60     6.475  0.1079         0.17027           
+Total         159    38.028                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Sinput}
+> adonis(clarkeAdjust(com.rsm)~tree:trt*g*year)
+\end{Sinput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com.rsm) ~ tree:trt * g * year) 
+
+Terms added sequentially (first to last)
+
+               Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g               9     5.493  0.6103  3.1150 0.11579  0.001 ***
+year            1     3.615  3.6151 18.4515 0.07621  0.001 ***
+tree:trt       40    12.855  0.3214  1.6403 0.27100  0.001 ***
+g:year          9     2.953  0.3281  1.6744 0.06224  0.001 ***
+tree:trt:year  40    10.765  0.2691  1.3737 0.22694  0.001 ***
+Residuals      60    11.755  0.1959         0.24782           
+Total         159    47.436                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Sinput}
+> adonis(clarkeAdjust(com[,colnames(com)!='pb'])~tree:trt*g*year)
+\end{Sinput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com[, colnames(com) != "pb"]) ~      tree:trt * g * year) 
+
+Terms added sequentially (first to last)
+
+               Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g               9     5.593  0.6215   5.300 0.15062  0.001 ***
+year            1     4.320  4.3200  36.839 0.11633  0.001 ***
+tree:trt       40    10.952  0.2738   2.335 0.29490  0.001 ***
+g:year          9     2.016  0.2240   1.910 0.05429  0.001 ***
+tree:trt:year  40     7.219  0.1805   1.539 0.19439  0.001 ***
+Residuals      60     7.036  0.1173         0.18947           
+Total         159    37.136                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Sinput}
+> adonis(clarkeAdjust(com.rsm[,colnames(com.rsm)!='pb'])~tree:trt*g*year)
+\end{Sinput}
+\begin{Soutput}
+Call:
+adonis(formula = clarkeAdjust(com.rsm[, colnames(com.rsm) !=      "pb"]) ~ tree:trt * g * year) 
+
+Terms added sequentially (first to last)
+
+               Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+g               9     5.339  0.5932  2.9935 0.11183  0.001 ***
+year            1     3.644  3.6437 18.3860 0.07632  0.001 ***
+tree:trt       40    12.840  0.3210  1.6197 0.26892  0.001 ***
+g:year          9     3.036  0.3373  1.7022 0.06359  0.001 ***
+tree:trt:year  40    10.995  0.2749  1.3870 0.23029  0.001 ***
+Residuals      60    11.891  0.1982         0.24905           
+Total         159    47.744                 1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+\end{Soutput}
+\begin{Sinput}
+> 
+\end{Sinput}
+\end{Schunk}
+
+\subsection{Indicator Species}
+
+\begin{Schunk}
+\begin{Sinput}
+> library(labdsv)
+> isa.c <- indval(com[trt==1,],g[trt==1])
+> isa.e <- indval(com[trt==2,],g[trt==2])
+> detach(package:labdsv)
+> isa.c <- t(cbind(isa.c$indval,pval=isa.c$pval))
+> isa.e <- t(cbind(isa.e$indval,pval=isa.e$pval))
+> 
+\end{Sinput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+> xtable(isa.c[,isa.c[nrow(isa.c),]<=0.05])
+\end{Sinput}
+% latex table generated in R 2.15.0 by xtable 1.7-0 package
+% Thu Aug 23 18:08:56 2012
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrrrrrrrrr}
+  \hline
+ & BEB & Cercopid..brn. & Cocc.nymph..blk.orng. & Earwig & Globuli & Lf.tier & Melyrid..gry.blk. & Phylla & Tip.roller \\ 
+  \hline
+1000 & 0.15 & 0.04 & 0.00 & 0.00 & 0.00 & 0.01 & 0.05 & 0.05 & 0.07 \\ 
+  1008 & 0.24 & 0.03 & 0.00 & 0.04 & 0.02 & 0.02 & 0.01 & 0.16 & 0.06 \\ 
+  1017 & 0.01 & 0.20 & 0.00 & 0.23 & 0.01 & 0.25 & 0.22 & 0.11 & 0.32 \\ 
+  1020 & 0.14 & 0.00 & 0.00 & 0.01 & 0.04 & 0.01 & 0.01 & 0.09 & 0.01 \\ 
+  996 & 0.06 & 0.08 & 0.01 & 0.01 & 0.00 & 0.05 & 0.08 & 0.14 & 0.01 \\ 
+  coal 3 & 0.08 & 0.03 & 0.04 & 0.01 & 0.03 & 0.00 & 0.06 & 0.06 & 0.02 \\ 
+  HE-10 & 0.05 & 0.00 & 0.00 & 0.01 & 0.01 & 0.00 & 0.13 & 0.10 & 0.05 \\ 
+  Rm-2 & 0.05 & 0.00 & 0.05 & 0.01 & 0.27 & 0.01 & 0.01 & 0.05 & 0.04 \\ 
+  T-15 & 0.02 & 0.00 & 0.00 & 0.01 & 0.17 & 0.00 & 0.01 & 0.02 & 0.01 \\ 
+  WC-5 & 0.05 & 0.00 & 0.20 & 0.00 & 0.00 & 0.05 & 0.01 & 0.20 & 0.10 \\ 
+  pval & 0.01 & 0.04 & 0.02 & 0.05 & 0.01 & 0.02 & 0.03 & 0.04 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{center}
+\end{table}\begin{Sinput}
+> xtable(isa.e[,isa.e[nrow(isa.e),]<=0.05])
+\end{Sinput}
+% latex table generated in R 2.15.0 by xtable 1.7-0 package
+% Thu Aug 23 18:08:56 2012
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrrr}
+  \hline
+ & Lfhppr..fisheye. & midge & punkie \\ 
+  \hline
+1000 & 0.02 & 0.01 & 0.06 \\ 
+  1008 & 0.15 & 0.02 & 0.02 \\ 
+  1017 & 0.24 & 0.33 & 0.03 \\ 
+  1020 & 0.01 & 0.01 & 0.01 \\ 
+  996 & 0.12 & 0.01 & 0.03 \\ 
+  coal 3 & 0.03 & 0.00 & 0.01 \\ 
+  HE-10 & 0.06 & 0.00 & 0.10 \\ 
+  Rm-2 & 0.07 & 0.05 & 0.03 \\ 
+  T-15 & 0.03 & 0.01 & 0.01 \\ 
+  WC-5 & 0.11 & 0.01 & 0.19 \\ 
+  pval & 0.00 & 0.00 & 0.05 \\ 
+   \hline
+\end{tabular}
+\end{center}
+\end{table}\begin{Sinput}
+> 
+\end{Sinput}
+\end{Schunk}
+
+\subsection{Network Models}
+
+\begin{Schunk}
+\begin{Sinput}
+>   library(network)
+> all.net <- gamNet(com)
+\end{Sinput}
+\begin{Soutput}
+[1] 2% complete
+[1] 4% complete
+[1] 4% complete
+[1] 6% complete
+[1] 6% complete
+[1] 6% complete
+[1] 8% complete
+[1] 8% complete
+[1] 8% complete
+[1] 8% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 13% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 15% complete
+[1] 15% complete
+[1] 15% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 18% complete
+[1] 18% complete
+[1] 18% complete
+[1] 18% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 20% complete
+[1] 20% complete
+[1] 20% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 22% complete
+[1] 22% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 24% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 38% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 40% complete
+[1] 40% complete
+[1] 40% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+\end{Soutput}
+\begin{Sinput}
+> my.netplot <- function(x,com){
++   plot(as.network(abs(x)),displaylabels=TRUE,label.cex=0.5,
++        edge.lwd=abs(x),usearrows=FALSE,edge.col='grey',vertex.col='darkgrey',
++        vertex.cex=(apply(com,2,sum)/sum(apply(com,2,sum))+1)^3,
++        vertex.border='grey')
++ }
+> my.netplot(all.net,com)
+> 
+\end{Sinput}
+\end{Schunk}
+\includegraphics{pb_removal-027}
+
+\begin{Schunk}
+\begin{Soutput}
+[1] 2% complete
+[1] 4% complete
+[1] 4% complete
+[1] 6% complete
+[1] 6% complete
+[1] 6% complete
+[1] 8% complete
+[1] 8% complete
+[1] 8% complete
+[1] 8% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 13% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 15% complete
+[1] 15% complete
+[1] 15% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 18% complete
+[1] 18% complete
+[1] 18% complete
+[1] 18% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 20% complete
+[1] 20% complete
+[1] 20% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 22% complete
+[1] 22% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 24% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 38% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 40% complete
+[1] 40% complete
+[1] 40% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+\end{Soutput}
+\begin{Soutput}
+[1] 2% complete
+[1] 4% complete
+[1] 4% complete
+[1] 6% complete
+[1] 6% complete
+[1] 6% complete
+[1] 8% complete
+[1] 8% complete
+[1] 8% complete
+[1] 8% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 10% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 12% complete
+[1] 13% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 14% complete
+[1] 15% complete
+[1] 15% complete
+[1] 15% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 16% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 17% complete
+[1] 18% complete
+[1] 18% complete
+[1] 18% complete
+[1] 18% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 19% complete
+[1] 20% complete
+[1] 20% complete
+[1] 20% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 21% complete
+[1] 22% complete
+[1] 22% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 23% complete
+[1] 24% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 25% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 27% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 29% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 31% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 33% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 35% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 37% complete
+[1] 38% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 39% complete
+[1] 40% complete
+[1] 40% complete
+[1] 40% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 41% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 42% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 43% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 44% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 45% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 46% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 47% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 48% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 49% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 50% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 51% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 52% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 53% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 54% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 55% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 56% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 57% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 58% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 59% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 60% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 61% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 62% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 63% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 64% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 65% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 66% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 67% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 68% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 69% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 70% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 71% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 72% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 73% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 74% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 75% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 76% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 77% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 78% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 79% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 80% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 81% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 82% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 83% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 84% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 85% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 86% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 87% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 88% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 89% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 90% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 91% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 92% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 93% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 94% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 95% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 96% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 97% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 98% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 99% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+[1] 100% complete
+\end{Soutput}
+\end{Schunk}
+\includegraphics{pb_removal-028}
+
+%Genotype by trt
+\begin{Schunk}
+\begin{Sinput}
+> ## gt.nets <- lapply(split(data.frame(com),list(g,trt)),gamNet)
+> ## dput(gt.nets,'net_models_combined/gtnets.txt')
+> gt.nets <- dget('net_models_combined/gtnets.txt')
+> gt.nets <- gt.nets[order(names(gt.nets))]
+> gt.com <- split(data.frame(com),list(g,trt))
+> gt.com <- gt.com[order(names(gt.com))]
+> par(mfrow=c(1,2))
+> for (i in 1:length(gt.nets)){
++   my.netplot(gt.nets[[i]],gt.com[[i]])
++   title(main=names(gt.nets)[i])
++ }
+> 
+\end{Sinput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+> require(network)
+> require(sna)
+> plot.net <- function(x,.com,mode='circle',labels=FALSE){
++   c.names <- colnames(x)
++   c.lab <- 1:length(c.names)
++   central. <- sna::degree(abs(x))
++   central. <- central./max(central.)
++   v.col <-(apply(.com,2,sum)/sum(apply(.com,2,sum))+1)^2
++   v.col[v.col==min(v.col)] <- 0
++   v.col <- grey(1-(v.col/max(v.col)))
++   e.col <- x
++   e.col[x<0] <- 'lightgrey'
++   e.col[x>0] <- 'darkgrey'
++   e.col[x==0] <- 'white'
++   plot(as.network(abs(x)),displaylabels=labels,label=c.lab,label.cex=0.5,
++        edge.lwd=(abs(x)/max(abs(x)))*0.75,usearrows=FALSE,edge.col=e.col,
++        vertex.col=v.col,vertex.cex=(central.+1)^2,
++        vertex.border='darkgrey',mode=mode)
++ }
+>                                         #
+> fmf <- function(n){
++ ### Find minimum factors
++   d.m <- ((1:n)%*%t(1:n))
++   v <- (apply(d.m,1,function(x,n) if (length((1:length(x))[x==n])>0){(1:length(x))[x==n]}else{0},n=n))
++   v. <- (1:n)[v!=0]
++   v <- v[v!=0]
++   dif <- abs(v-v.)
++   return(sort(c(v[dif==min(dif)][1],v.[dif==min(dif)][1])))
++ }
+>                                         #
+> ce <- unlist(lapply(strsplit(names(gt.nets),split='\\.'),function(x) x[2]))
+> ce[ce=='1'] <- 'C';ce[ce=='2'] <- 'E'
+> par(mfrow=sort(fmf(length(gt.nets)),decreasing=TRUE),mar=c(5.1, 4.1, 4.1, 2.1)-c(4.05,4,3,2.1))
+> for (i in 1:length(gt.nets)){
++   plot.net(gt.nets[[i]],.com=gt.com[[i]])
++   title(main=paste(lapply(strsplit(names(gt.nets),split='\\.'),
++           function(x) x[1])[[i]],ce[i]))
++ }
+>                                         #difference networks
+> gtn.1 <- gt.nets[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='1']
+> gtn.2 <- gt.nets[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='2']
+> gtn.d <- list()
+> for (i in 1:length(gtn.1)){
++   gtn.d[[i]] <- gtn.1[[i]]-gtn.2[[i]]
++   names(gtn.d)[i] <- strsplit(names(gtn.1)[i],split='\\.')[[1]][1]
++ }
+>                                         #round to two digits
+> gtn.d <- lapply(gtn.d,round,digits=2)
+>                                         #
+> par(mfrow=sort(fmf(length(gtn.d)),decreasing=FALSE),mar=c(5.1, 4.1, 4.1, 2.1)-c(4,3,3,2.1))
+> for (i in 1:length(gtn.d)){
++   plot.net(gtn.d[[i]],.com=gt.com[[i]])
++   title(main=names(gtn.d)[i])
++ }
+> names(gtn.d)
+\end{Sinput}
+\begin{Soutput}
+ [1] "1000"   "1008"   "1017"   "1020"   "996"    "coal 3" "HE-10"  "Rm-2"  
+ [9] "T-15"   "WC-5"  
+\end{Soutput}
+\begin{Sinput}
+> i <- (1:length(gtn.d))[names(gtn.d)=='HE-10']
+> par(mfrow=c(1,3))
+> plot.net(gtn.d[[i]],.com=data.frame(gt.com[names(gt.com)==names(gtn.1)[i]])-data.frame(gt.com[names(gt.com)==names(gtn.2)[i]]));  title(main=names(gtn.d)[i])
+> plot.net(gtn.1[[i]],.com=data.frame(gt.com[names(gt.com)==names(gtn.1)[i]]));  title(main=names(gtn.1)[i])
+> plot.net(gtn.2[[i]],.com=data.frame(gt.com[names(gt.com)==names(gtn.2)[i]]));  title(main=names(gtn.2)[i])
+> 
+\end{Sinput}
+\end{Schunk}
+
+\section{Final Analyses}
+
+\subsection{PB Effect on Network Structure}
+
+\begin{Schunk}
+\begin{Sinput}
+>                                         #euclidean distances between removal and control
+> gtn.ed <- unlist(lapply(gtn.d,function(x) sqrt(sum(x^2))))
+> gtn.ed. <- unlist(lapply(gtn.d,function(x) sqrt(sum(x[rownames(x)!='pb',colnames(x)!='pb']^2)))) #no pb connections
+> pb.1 <- unlist(lapply(gt.com[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='1'],function(x)
++              mean(x[,colnames(x)=='pb'])))
+> pb.2 <- unlist(lapply(gt.com[substr(names(gt.nets),nchar(names(gt.nets)),nchar(names(gt.nets)))=='2'],function(x)
++              mean(x[,colnames(x)=='pb'])))
+> pb.d <- pb.1-pb.2
+>                                         #analyses
+> par(mfrow=c(1,1))
+> plot(pb.1,pb.2)
+> abline(lm(pb.2~pb.1))
+>                                         #
+> par(mfrow=c(1,2))
+> plot(gtn.ed~pb.d,ylim=c(0,60))
+> abline(lm(gtn.ed~pb.d))
+> plot(gtn.ed.~pb.d,ylim=c(0,60))
+> abline(lm(gtn.ed.~pb.d))
+> summary(lm(gtn.ed.~pb.d))
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = gtn.ed. ~ pb.d)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-6.289 -4.438 -1.593  2.421 11.115 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)   
+(Intercept)  17.2313     3.4473   4.998  0.00105 **
+pb.d         -0.1624     0.1581  -1.027  0.33427   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+Residual standard error: 6.234 on 8 degrees of freedom
+Multiple R-squared: 0.1166,	Adjusted R-squared: 0.006145 
+F-statistic: 1.056 on 1 and 8 DF,  p-value: 0.3343 
+\end{Soutput}
+\begin{Sinput}
+>                                         #
+> 
+\end{Sinput}
+\end{Schunk}
+
+\subsection{Structural Differences}
+\begin{Schunk}
+\begin{Sinput}
+> detach(package::bipartite)
