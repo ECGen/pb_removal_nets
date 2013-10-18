@@ -51,7 +51,7 @@ my.gplot <- function(scn){
                    edge.col=e.col,edge.lwd=log(abs(scn)),vertex.col='lightblue',
                    mode='circle')
 }
-
+print('Modeling networks')
 net.08 <- lapply(co.08,dep.net)
 net.09 <- lapply(co.09,dep.net)
                                         #reduced nets
@@ -86,7 +86,18 @@ g.09 <- array(0,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),2))
 g.09[,,1] <- net.09[[1]]
 g.09[,,2] <- net.09[[2]]
                                         #test
-qap.08 <- qaptest(g.08,gcor,g1=1,g2=2)
-dput(qap.08,file='../results/qap08.Rdata')
-qap.09 <- qaptest(g.09,gcor,g1=1,g2=2)
-dput(qap.09,file='../results/qap09.Rdata')
+   ## print('running qap 2008')
+   ## qap.08 <- qaptest(g.08,gcor,g1=1,g2=2)
+   ## dput(qap.08,file='../results/qap08.Rdata')
+  ## print('gcor matrices')
+  ## dput(gcor(g.08),file='../data/gcor08.Rdata')
+  ## dput(gcor(g.09),file='../data/gcor09.Rdata')
+  ## print('running qap 2009')
+  ## qap.09 <- qaptest(g.09,gcor,g1=1,g2=2)
+  ## dput(qap.09,file='../results/qap09.Rdata')
+  ## print('Done!')
+library(sna)
+qap.08 <- dget('../results/qap08.Rdata')
+qap.09 <- dget('../results/qap09.Rdata')
+summary(qap.08)
+summary(qap.09)

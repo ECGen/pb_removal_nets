@@ -60,6 +60,26 @@ structure''
   \end{enumerate}
 \end{itemize}
 
+<<>>=
+library(sna)
+source('~/projects/dissertation/projects/lichen_coo/src/helper_funcs.R')
+qap.08 <- dget('../results/qap08.Rdata')
+qap.09 <- dget('../results/qap09.Rdata')
+summary(qap.08)
+summary(qap.09)
+gcor.08 <- dget('../data/gcor08.Rdata')
+gcor.09 <- dget('../data/gcor09.Rdata')
+gcor.08[is.na(gcor.08)] <- 0
+gcor.09[is.na(gcor.09)] <- 0
+my.gplot(round(gcor.08,2))
+coord <- gplot(round(g.08[,,1],2))
+par(mfrow=c(1,2))
+my.gplot(round(g.08[,,1],2),coord=coord)
+my.gplot(round(g.08[,,2],2),coord=coord)
+
+
+@ 
+
 \section{BEFORE 18 Oct 2013}
 \begin{enumerate}
 \item network size and stability

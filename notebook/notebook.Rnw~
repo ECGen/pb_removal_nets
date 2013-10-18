@@ -53,9 +53,10 @@ structure''
 \item A forest of co-occurrence with and without p. betae
   \begin{enumerate}
   \item Generate co-occurrence networks for both years with and
-    without p. betae
-  \item Look at changes in structure between years and between
-    treatments
+    without p. betae (Araujo method)
+  \item Look at changes in structure between between treatments and
+    compare the two years (QAP test using correlation, i.e. are
+    co-occurrences lost with the treatment?)
   \end{enumerate}
 \end{itemize}
 
