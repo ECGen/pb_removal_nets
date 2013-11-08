@@ -45,7 +45,7 @@ co.09 <- lapply(pbr.09,as.binary)
 ###Networks
 library(sna)
 source('~/projects/dissertation/projects/lichen_coo/src/seenetR.R')
-source('~/projects/dissertation/projects/art_coo/src/helper_func.R')
+source('~/projects/pb_removal_nets/src/helper_funcs.R')
 
 print('Modeling networks')
 net.08 <- lapply(co.08,dep.net)
@@ -64,12 +64,25 @@ edge.09 <- list(net.09[[1]][net.09[[1]]!=0|net.09[[2]]!=0],net.09[[2]][net.09[[1
 names(edge.09) <- names(net.09)
 plot(edge.09[[2]]~edge.09[[1]])
                                         #gplots
-par(mfrow=c(2,2))
-coord.08=mgp2(net.08[[1]],v.cex=(apply(pbr.08[[1]],2,sum)/max(apply(pbr.08[[1]],2,sum))),scalar=1)
-mgp2(net.08[[2]],v.cex=(apply(pbr.08[[2]],2,sum)/max(apply(pbr.08[[2]],2,sum))),scalar=1,my.coord=coord.08)
-coord.09=mgp2(net.09[[1]],v.cex=(apply(pbr.09[[1]],2,sum)/max(apply(pbr.09[[1]],2,sum))),scalar=1)
-mgp2(net.09[[2]],v.cex=(apply(pbr.09[[2]],2,sum)/max(apply(pbr.09[[2]],2,sum))),scalar=1,my.coord=coord.09)
+par(mfcol=c(2,2))
+coord.08=mgp2(net.08[[1]],v.cex=(apply(pbr.08[[1]],2,sum)/max(apply(pbr.08[[1]],2,sum))),scalar=1,displaylabels=TRUE)
+title(main='2008')
+mtext(side=2,text='Control',font=2)
+mgp2(net.08[[2]],v.cex=(apply(pbr.08[[2]],2,sum)/max(apply(pbr.08[[2]],2,sum))),scalar=1,my.coord=coord.08,displaylabels=TRUE)
+mtext(side=2,text='Removed',font=2)
+coord.09=mgp2(net.09[[1]],v.cex=(apply(pbr.09[[1]],2,sum)/max(apply(pbr.09[[1]],2,sum))),scalar=1,displaylabels=TRUE)
+title(main='2009')
+mgp2(net.09[[2]],v.cex=(apply(pbr.09[[2]],2,sum)/max(apply(pbr.09[[2]],2,sum))),scalar=1,my.coord=coord.09,displaylabels=TRUE)
+                                        #
+par(mfrow=c(1,2))
+hist(nodeDist(net.08),xlim=c(0,max(nodeDist(net.08))),main='2008')
+abline(v=mean(nodeDist(net.08)),lty=2)
+hist(nodeDist(net.09),xlim=c(0,max(nodeDist(net.09))),main='2009')
+abline(v=mean(nodeDist(net.09)),lty=2)
+t.test(nodeDist(net.08))
+t.test(nodeDist(net.09))
                                         #qap test
+
 g.08 <- array(0,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),2))
 g.08[,,1] <- net.08[[1]]
 g.08[,,2] <- net.08[[2]]

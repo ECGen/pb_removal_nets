@@ -31,6 +31,9 @@ trt.09 <- as.character(sapply(as.character(pbr.09[,2]),function(x) strsplit(x,sp
                                         #remove env data
 pbr.08 <- pbr.08[,-1:-2]
 pbr.09 <- pbr.09[,-1:-2]
+                                        #remove species occurring less than 10 times
+pbr.08 <- pbr.08[,apply(pbr.08,2,sum)>=5]
+pbr.09 <- pbr.09[,apply(pbr.09,2,sum)>=5]
                                         #separate by treatment
 pbr.08 <- split(pbr.08,trt.08)
 pbr.09 <- split(pbr.09,trt.09)
@@ -42,15 +45,8 @@ co.09 <- lapply(pbr.09,as.binary)
 ###Networks
 library(sna)
 source('~/projects/dissertation/projects/lichen_coo/src/seenetR.R')
+source('~/projects/dissertation/projects/art_coo/src/helper_func.R')
 
-my.gplot <- function(scn){
-    e.col <- sign(scn)
-    e.col[e.col==1] <- 'grey'
-    e.col[e.col==-1] <- 'red'
-    coord <- gplot(abs(scn),displaylabels=TRUE,gmode='graph',pad=1.5,
-                   edge.col=e.col,edge.lwd=log(abs(scn)),vertex.col='lightblue',
-                   mode='circle')
-}
 print('Modeling networks')
 net.08 <- lapply(co.08,dep.net)
 net.09 <- lapply(co.09,dep.net)
@@ -60,24 +56,19 @@ rownames(net.08[[1]]) <- colnames(net.08[[1]]) <- as.character(1:ncol(net.08[[1]
 rownames(net.08[[2]]) <- colnames(net.08[[2]]) <- as.character(1:ncol(net.08[[2]]))
 rownames(net.09[[1]]) <- colnames(net.09[[1]]) <- as.character(1:ncol(net.09[[1]]))
 rownames(net.09[[2]]) <- colnames(net.09[[2]]) <- as.character(1:ncol(net.09[[2]]))
+                                        #correlations
+edge.08 <- list(net.08[[1]][net.08[[1]]!=0|net.08[[2]]!=0],net.08[[2]][net.08[[1]]!=0|net.08[[2]]!=0])
+names(edge.08) <- names(net.08)
+plot(edge.08[[2]]~edge.08[[1]])
+edge.09 <- list(net.09[[1]][net.09[[1]]!=0|net.09[[2]]!=0],net.09[[2]][net.09[[1]]!=0|net.09[[2]]!=0])
+names(edge.09) <- names(net.09)
+plot(edge.09[[2]]~edge.09[[1]])
                                         #gplots
-                                        #5.1 4.1 4.1 2.1
-                                        #0.8466 0.6806 0.6806 0.3486
-## par(mfrow=c(2,2),mar=c(0.1,0.1,0.1,2.1),mai=c(0.8466,0.6806,0.6806,0.3486)*0.2)
-## my.gplot(net.08[[1]])
-## mtext('2008',2,font=2)
-## title('Control')
-## my.gplot(net.08[[2]])
-## title('Removed')
-## my.gplot(net.09[[1]])
-## mtext('2009',2,font=2)
-## my.gplot(net.09[[2]])
-                                        #edge weight distribution
-## par(mfrow=c(2,2))
-## hist(net.08[[1]])
-## hist(net.08[[2]])
-## hist(net.09[[1]])
-## hist(net.09[[2]])
+par(mfrow=c(2,2))
+coord.08=mgp2(net.08[[1]],v.cex=(apply(pbr.08[[1]],2,sum)/max(apply(pbr.08[[1]],2,sum))),scalar=1)
+mgp2(net.08[[2]],v.cex=(apply(pbr.08[[2]],2,sum)/max(apply(pbr.08[[2]],2,sum))),scalar=1,my.coord=coord.08)
+coord.09=mgp2(net.09[[1]],v.cex=(apply(pbr.09[[1]],2,sum)/max(apply(pbr.09[[1]],2,sum))),scalar=1)
+mgp2(net.09[[2]],v.cex=(apply(pbr.09[[2]],2,sum)/max(apply(pbr.09[[2]],2,sum))),scalar=1,my.coord=coord.09)
                                         #qap test
 g.08 <- array(0,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),2))
 g.08[,,1] <- net.08[[1]]
@@ -86,16 +77,17 @@ g.09 <- array(0,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),2))
 g.09[,,1] <- net.09[[1]]
 g.09[,,2] <- net.09[[2]]
                                         #test
-   ## print('running qap 2008')
-   ## qap.08 <- qaptest(g.08,gcor,g1=1,g2=2)
-   ## dput(qap.08,file='../results/qap08.Rdata')
-  ## print('gcor matrices')
-  ## dput(gcor(g.08),file='../data/gcor08.Rdata')
-  ## dput(gcor(g.09),file='../data/gcor09.Rdata')
-  ## print('running qap 2009')
-  ## qap.09 <- qaptest(g.09,gcor,g1=1,g2=2)
-  ## dput(qap.09,file='../results/qap09.Rdata')
-  ## print('Done!')
+print('running qap 2008')
+qap.08 <- qaptest(g.08,gcor,g1=1,g2=2)
+dput(qap.08,file='../results/qap08.Rdata')
+print('running qap 2009')
+qap.09 <- qaptest(g.09,gcor,g1=1,g2=2)
+dput(qap.09,file='../results/qap09.Rdata')
+print('gcor matrices')
+dput(gcor(g.08),file='../data/gcor08.Rdata')
+dput(gcor(g.09),file='../data/gcor09.Rdata')
+print('Done!')
+
 library(sna)
 qap.08 <- dget('../results/qap08.Rdata')
 qap.09 <- dget('../results/qap09.Rdata')

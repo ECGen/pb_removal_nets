@@ -100,6 +100,10 @@ my.gplot <- function(scn,coord='',v.cex=''){
   
 }
 
+nodeDist <- function(x){
+  sqrt((x[[1]][x[[1]]!=0|x[[2]]!=0]-x[[2]][x[[1]]!=0|x[[2]]!=0])^2)
+}
+
 netDist <- function(dn.t){
   net.d <- matrix(0,nrow=length(dn.t),ncol=length(dn.t))
   rownames(net.d) <- colnames(net.d) <- names(dn.t)
