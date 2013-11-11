@@ -26,6 +26,11 @@ community network structure and stability}
 \setcounter{tocdepth}{3}  %%activate to number sections
 \tableofcontents
 
+\section{10 nov 2013}
+Add p betae
+Separate susceptible
+
+
 \section{18 Oct 2013}
 
 \textbf{Review Art's Manuscript}

@@ -2,6 +2,7 @@
 ###Current file started 18 Oct 2013
 
 ###Import data
+add.pb <- FALSE
 pbr.08 <- read.csv('../data/keith_pb_removal_2008.csv')
 pbr.09 <- read.csv('../data/keith_pb_removal_2009.csv')
 pbr.08[,2] <- as.character(pbr.08[,2])
@@ -37,6 +38,25 @@ pbr.09 <- pbr.09[,apply(pbr.09,2,sum)>=5]
                                         #separate by treatment
 pbr.08 <- split(pbr.08,trt.08)
 pbr.09 <- split(pbr.09,trt.09)
+                                        #add pb?
+if (add.pb){
+  library(xlsx)
+  pb08 <- as.matrix(read.xlsx('../data/P betae excl treatment effect 2008.xlsx',sheetIndex=1))
+  colnames(pb08) <- as.character(pb08[1,])
+  pb08 <- pb08[-1,]
+  pb08 <- data.frame(genotype=pb08[,1],tree=pb08[,2],x=as.numeric(pb08[,3]),c=as.numeric(pb08[,4]))
+  pb08.tree <- c(as.character(pb08[,2]),as.character(pb08[,2]))
+  pb08.trt <- c(rep('x',nrow(pb08)),rep('c',nrow(pb08)))
+  pb <- c(pb08[,3],pb08[,4])
+  trt.tree.pbr <- paste(tree.08,trt.08)
+  trt.tree.pb <- paste(pb08.tree,pb08.trt)
+  pb <- pb[match(trt.tree.pbr,trt.tree.pb)]
+  check <- trt.tree.pb[match(trt.tree.pbr,trt.tree.pb)]
+  if (all(check==trt.tree.pbr)){print('You are good to go!')}else{warning('Oh no!!!')}
+  pb <- split(pb,trt.08)
+  pbr.08[[1]] <- cbind(pb=pb[[1]],pbr.08[[1]])
+  pbr.08[[2]] <- cbind(pb=pb[[2]],pbr.08[[2]])
+}else{}
                                         #make binary
 as.binary <- function(x){x[x!=0] <- 1;return(x)}
 co.08 <- lapply(pbr.08,as.binary)
@@ -45,7 +65,7 @@ co.09 <- lapply(pbr.09,as.binary)
 ###Networks
 library(sna)
 source('~/projects/dissertation/projects/lichen_coo/src/seenetR.R')
-source('~/projects/pb_removal_nets/src/helper_funcs.R')
+source('~/pb_removal_nets/src/helper_funcs.R')
 
 print('Modeling networks')
 net.08 <- lapply(co.08,dep.net)
@@ -81,28 +101,28 @@ hist(nodeDist(net.09),xlim=c(0,max(nodeDist(net.09))),main='2009')
 abline(v=mean(nodeDist(net.09)),lty=2)
 t.test(nodeDist(net.08))
 t.test(nodeDist(net.09))
-                                        #qap test
+##                                         #qap test
 
-g.08 <- array(0,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),2))
-g.08[,,1] <- net.08[[1]]
-g.08[,,2] <- net.08[[2]]
-g.09 <- array(0,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),2))
-g.09[,,1] <- net.09[[1]]
-g.09[,,2] <- net.09[[2]]
-                                        #test
-print('running qap 2008')
-qap.08 <- qaptest(g.08,gcor,g1=1,g2=2)
-dput(qap.08,file='../results/qap08.Rdata')
-print('running qap 2009')
-qap.09 <- qaptest(g.09,gcor,g1=1,g2=2)
-dput(qap.09,file='../results/qap09.Rdata')
-print('gcor matrices')
-dput(gcor(g.08),file='../data/gcor08.Rdata')
-dput(gcor(g.09),file='../data/gcor09.Rdata')
-print('Done!')
+## g.08 <- array(0,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),2))
+## g.08[,,1] <- net.08[[1]]
+## g.08[,,2] <- net.08[[2]]
+## g.09 <- array(0,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),2))
+## g.09[,,1] <- net.09[[1]]
+## g.09[,,2] <- net.09[[2]]
+##                                         #test
+## print('running qap 2008')
+## qap.08 <- qaptest(g.08,gcor,g1=1,g2=2)
+## dput(qap.08,file='../results/qap08.Rdata')
+## print('running qap 2009')
+## qap.09 <- qaptest(g.09,gcor,g1=1,g2=2)
+## dput(qap.09,file='../results/qap09.Rdata')
+## print('gcor matrices')
+## dput(gcor(g.08),file='../data/gcor08.Rdata')
+## dput(gcor(g.09),file='../data/gcor09.Rdata')
+## print('Done!')
 
-library(sna)
-qap.08 <- dget('../results/qap08.Rdata')
-qap.09 <- dget('../results/qap09.Rdata')
-summary(qap.08)
-summary(qap.09)
+## library(sna)
+## qap.08 <- dget('../results/qap08.Rdata')
+## qap.09 <- dget('../results/qap09.Rdata')
+## summary(qap.08)
+## summary(qap.09)
