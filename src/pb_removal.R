@@ -2,7 +2,8 @@
 ###Current file started 18 Oct 2013
 
 ###Import data
-add.pb <- FALSE
+add.pb <- TRUE
+rm.resistant <- TRUE
 pbr.08 <- read.csv('../data/keith_pb_removal_2008.csv')
 pbr.09 <- read.csv('../data/keith_pb_removal_2009.csv')
 pbr.08[,2] <- as.character(pbr.08[,2])
@@ -32,12 +33,14 @@ trt.09 <- as.character(sapply(as.character(pbr.09[,2]),function(x) strsplit(x,sp
                                         #remove env data
 pbr.08 <- pbr.08[,-1:-2]
 pbr.09 <- pbr.09[,-1:-2]
-                                        #remove species occurring less than 10 times
+                                        #remove species occurring less than 5 times
 pbr.08 <- pbr.08[,apply(pbr.08,2,sum)>=5]
 pbr.09 <- pbr.09[,apply(pbr.09,2,sum)>=5]
                                         #separate by treatment
 pbr.08 <- split(pbr.08,trt.08)
 pbr.09 <- split(pbr.09,trt.09)
+geno.08 <- split(geno.08,trt.08)
+geno.09 <- split(geno.09,trt.09)
                                         #add pb?
 if (add.pb){
   library(xlsx)
@@ -56,20 +59,37 @@ if (add.pb){
   pb <- split(pb,trt.08)
   pbr.08[[1]] <- cbind(pb=pb[[1]],pbr.08[[1]])
   pbr.08[[2]] <- cbind(pb=pb[[2]],pbr.08[[2]])
+                                        #
+  pb09 <- as.matrix(read.xlsx('../data/2009Pbetaetreatmenteffect.xls',sheetIndex=1))
+  pb09 <- data.frame(genotype=pb09[,1],tree=pb09[,2],x=as.numeric(pb09[,3]),c=as.numeric(pb09[,4]))
+  pb09[pb09[,3]==1,3] <- 'x'
+  pb09[pb09[,3]==2,3] <- 'c'
+  pb09 <- pb09[match(paste(tree.09,trt.09),paste(pb09[,2],pb09[,3])),]
+  pb <- split(pb09[,4],pb09[,3])
+  if (all(split(pb09[,2],pb09[,3])[[1]]==split(tree.09,trt.09)[[1]])){print('Good to go!')}else{print('Holy crap!')}
+  pbr.09[[1]] <- cbind(pb=pb[[1]],pbr.09[[1]])
+  pbr.09[[2]] <- cbind(pb=pb[[2]],pbr.09[[2]])
 }else{}
                                         #make binary
 as.binary <- function(x){x[x!=0] <- 1;return(x)}
 co.08 <- lapply(pbr.08,as.binary)
 co.09 <- lapply(pbr.09,as.binary)
+                                        #remove resistants
+if (rm.resistant){
+  co.08[[1]] <- co.08[[1]][geno.08[[1]]!='1008'&geno.08[[1]]!='1020',]
+  co.08[[2]] <- co.08[[2]][geno.08[[2]]!='1008'&geno.08[[2]]!='1020',]
+  co.09[[1]] <- co.09[[1]][geno.09[[1]]!='1008'&geno.09[[1]]!='1020',]
+  co.09[[2]] <- co.09[[2]][geno.09[[2]]!='1008'&geno.09[[2]]!='1020',]
+}else{}
 
 ###Networks
 library(sna)
 source('~/projects/dissertation/projects/lichen_coo/src/seenetR.R')
-source('~/pb_removal_nets/src/helper_funcs.R')
-
+source('~/projects/pb_removal_nets/src/helper_funcs.R')
+                                        #
 print('Modeling networks')
-net.08 <- lapply(co.08,dep.net)
-net.09 <- lapply(co.09,dep.net)
+net.08 <- lapply(co.08,co.net)
+net.09 <- lapply(co.09,co.net)
                                         #reduced nets
                                         #reduce speceis names to numbers
 rownames(net.08[[1]]) <- colnames(net.08[[1]]) <- as.character(1:ncol(net.08[[1]]))
@@ -101,6 +121,7 @@ hist(nodeDist(net.09),xlim=c(0,max(nodeDist(net.09))),main='2009')
 abline(v=mean(nodeDist(net.09)),lty=2)
 t.test(nodeDist(net.08))
 t.test(nodeDist(net.09))
+
 ##                                         #qap test
 
 ## g.08 <- array(0,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),2))
@@ -120,9 +141,14 @@ t.test(nodeDist(net.09))
 ## dput(gcor(g.08),file='../data/gcor08.Rdata')
 ## dput(gcor(g.09),file='../data/gcor09.Rdata')
 ## print('Done!')
+                                        #qap
+library(sna)
+qap.input08 <- array(NA,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),length(net.08)))
+qap.input08[,,1] <- net.08[[1]]
+qap.input08[,,2] <- net.08[[2]]
+qap.input09 <- array(NA,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),length(net.09)))
+qap.input09[,,1] <- net.09[[1]]
+qap.input09[,,2] <- net.09[[2]]
 
-## library(sna)
-## qap.08 <- dget('../results/qap08.Rdata')
-## qap.09 <- dget('../results/qap09.Rdata')
-## summary(qap.08)
-## summary(qap.09)
+qap.results08 <- qaptest(qap.input08,gcor,g1=1,g2=2)
+qap.results09 <- qaptest(qap.input09,gcor,g1=1,g2=2)

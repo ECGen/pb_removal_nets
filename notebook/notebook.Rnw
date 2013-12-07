@@ -26,10 +26,19 @@ community network structure and stability}
 \setcounter{tocdepth}{3}  %%activate to number sections
 \tableofcontents
 
-\section{10 nov 2013}
-Add p betae
-Separate susceptible
+\section{Tasks}
+\begin{itemize}
+\item Check exclusion labels by checking for richness and abundance effects
+\item Add p betae
+\item Remove resistant genotypes
+\end{itemize}
 
+
+
+\section{10 nov 2013}
+Check exclusion labels by checking for richness and abundance effects
+Add p betae
+Remove resistant genotypes
 
 \section{18 Oct 2013}
 
