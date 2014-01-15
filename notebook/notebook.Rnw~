@@ -27,10 +27,20 @@ community network structure and stability}
 \tableofcontents
 
 \section{Tasks}
-Check exclusion labels by checking for richness and abundance effects
-Add p betae
-Remove resistant genotypes
+\begin{itemize}
+\item Check exclusion labels by checking for richness and abundance effects
+\item Add p betae
+\item Remove resistant genotypes
+\end{itemize}
 
+\section{15 Jan 2014}
+
+Does nestedness change with removal of P. betae?
+
+<<>>=
+
+
+@ 
 
 \section{10 nov 2013}
 Check exclusion labels by checking for richness and abundance effects

@@ -33,7 +33,20 @@ community network structure and stability}
 \item Remove resistant genotypes
 \end{itemize}
 
+\section{15 Jan 2014}
 
+Does nestedness change with removal of P. betae?
+
+          nest    z      mean   2.5%   50%    97.5%    Pr(sim.)  
+c08+pb    30.132 -1.84   32.257 30.172 32.234 34.542   0.051 .
+x08+pb    30.388 -1.8631 32.843 30.556 32.718 35.54    0.041 *
+
+
+
+<<>>=
+  
+
+@ 
 
 \section{10 nov 2013}
 Check exclusion labels by checking for richness and abundance effects

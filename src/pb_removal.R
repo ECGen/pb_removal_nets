@@ -149,6 +149,7 @@ qap.input08[,,2] <- net.08[[2]]
 qap.input09 <- array(NA,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),length(net.09)))
 qap.input09[,,1] <- net.09[[1]]
 qap.input09[,,2] <- net.09[[2]]
+gcor(qap.input08,g1=1,g2=2)
 
 qap.results08 <- qaptest(qap.input08,gcor,g1=1,g2=2)
 qap.results09 <- qaptest(qap.input09,gcor,g1=1,g2=2)

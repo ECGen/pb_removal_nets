@@ -59,6 +59,16 @@ if (add.pb){
   pb <- split(pb,trt.08)
   pbr.08[[1]] <- cbind(pb=pb[[1]],pbr.08[[1]])
   pbr.08[[2]] <- cbind(pb=pb[[2]],pbr.08[[2]])
+                                        #
+  pb09 <- as.matrix(read.xlsx('../data/2009Pbetaetreatmenteffect.xls',sheetIndex=1))
+  pb09 <- data.frame(genotype=pb09[,1],tree=pb09[,2],x=as.numeric(pb09[,3]),c=as.numeric(pb09[,4]))
+  pb09[pb09[,3]==1,3] <- 'x'
+  pb09[pb09[,3]==2,3] <- 'c'
+  pb09 <- pb09[match(paste(tree.09,trt.09),paste(pb09[,2],pb09[,3])),]
+  pb <- split(pb09[,4],pb09[,3])
+  if (all(split(pb09[,2],pb09[,3])[[1]]==split(tree.09,trt.09)[[1]])){print('Good to go!')}else{print('Holy crap!')}
+  pbr.09[[1]] <- cbind(pb=pb[[1]],pbr.09[[1]])
+  pbr.09[[2]] <- cbind(pb=pb[[2]],pbr.09[[2]])
 }else{}
                                         #make binary
 as.binary <- function(x){x[x!=0] <- 1;return(x)}
@@ -78,8 +88,8 @@ source('~/projects/dissertation/projects/lichen_coo/src/seenetR.R')
 source('~/projects/pb_removal_nets/src/helper_funcs.R')
                                         #
 print('Modeling networks')
-net.08 <- lapply(co.08,dep.net)
-net.09 <- lapply(co.09,dep.net)
+net.08 <- lapply(co.08,co.net)
+net.09 <- lapply(co.09,co.net)
                                         #reduced nets
                                         #reduce speceis names to numbers
 rownames(net.08[[1]]) <- colnames(net.08[[1]]) <- as.character(1:ncol(net.08[[1]]))
@@ -131,9 +141,15 @@ t.test(nodeDist(net.09))
 ## dput(gcor(g.08),file='../data/gcor08.Rdata')
 ## dput(gcor(g.09),file='../data/gcor09.Rdata')
 ## print('Done!')
+                                        #qap
+library(sna)
+qap.input08 <- array(NA,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),length(net.08)))
+qap.input08[,,1] <- net.08[[1]]
+qap.input08[,,2] <- net.08[[2]]
+qap.input09 <- array(NA,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),length(net.09)))
+qap.input09[,,1] <- net.09[[1]]
+qap.input09[,,2] <- net.09[[2]]
+gcor(qap.input08,g1=1,g2=2)
 
-## library(sna)
-## qap.08 <- dget('../results/qap08.Rdata')
-## qap.09 <- dget('../results/qap09.Rdata')
-## summary(qap.08)
-## summary(qap.09)
+qap.results08 <- qaptest(qap.input08,gcor,g1=1,g2=2)
+qap.results09 <- qaptest(qap.input09,gcor,g1=1,g2=2)
