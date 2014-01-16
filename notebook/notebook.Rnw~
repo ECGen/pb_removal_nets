@@ -33,24 +33,53 @@ community network structure and stability}
 \item Remove resistant genotypes
 \end{itemize}
 
+\section{16 Jan 2014}
+Do genotypes differ in their diversity or richness?
+Does nestedness arise in 2009?
+
+<<>>=
+source('./src/pbr_load_data.R')
+                                        #with PB
+g08 <- geno.08[[1]]
+g09 <- geno.09[[1]]
+                                        #composition
+perm.08 <- lapply(pbr.08,function(x,g) adonis(x~g),g=g08)
+perm.09 <- lapply(pbr.09,function(x,g) adonis(x~g),g=g09)
+perm.08np <- lapply(pbr.08,function(x,g) adonis(x[,-1]~g),g=g08) #no pemphigus
+perm.09np <- lapply(pbr.09,function(x,g) adonis(x[,-1]~g),g=g09) #no pemphigus
+                                        #richness
+R.08 <- lapply(pbr.08,function(x) apply(x,1,function(x) sum(sign(x))))
+R.09 <- lapply(pbr.09,function(x) apply(x,1,function(x) sum(sign(x))))
+R.08np <- lapply(pbr.08,function(x) apply(x[,-1],1,function(x) sum(sign(x))))
+R.09np <- lapply(pbr.09,function(x) apply(x[,-1],1,function(x) sum(sign(x))))
+summary(aov(R.08[[1]]~factor(g08)))
+summary(aov(R.09[[1]]~factor(g09)))
+summary(aov(R.08np[[1]]~factor(g08)))
+summary(aov(R.09np[[1]]~factor(g09)))
+
+##Running nestedness on Romer
+##Decide what analyses will go into Art's manuscript.
+##Nestedness? Unipartite networks? Co-occurrence analyses?
+
+@ 
+
 \section{15 Jan 2014}
 
 Does nestedness change with removal of P. betae?
 
-Currently running on romer.
+Ran on Romer, but script returned un-recoverable output.
 
           nest    z      mean   2.5%   50%    97.5%    Pr(sim.)  
 c08+pb    30.132 -1.84   32.257 30.172 32.234 34.542   0.051 .
 x08+pb    30.388 -1.8631 32.843 30.556 32.718 35.54    0.041 *
 
 <<>>=
-
-getwd()
+library(ComGenR)
 nest.results <- list()
-nest.results[[1]] <- get('/Users/Aeolus/projects/pb_removal_nets/results/nest_pb08r1.Rdata')
-nest.results[[2]] <- get('./results/nest_pb09r1.Rdata')
-nest.results[[3]] <- get('./results/nest_08r1.Rdata')
-nest.results[[4]] <- get('./results/nest_09r1.Rdata')
+nest.results[[1]] <- dget('./results/nest_pb08r1.Rdata')
+nest.results[[2]] <- dget('./results/nest_pb09r1.Rdata')
+nest.results[[3]] <- dget('./results/nest_08r1.Rdata')
+nest.results[[4]] <- dget('./results/nest_09r1.Rdata')
 
 @ 
 

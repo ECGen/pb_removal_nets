@@ -34,16 +34,17 @@ community network structure and stability}
 \end{itemize}
 
 \section{16 Jan 2014}
-Do genotypes differ in their diversity or richness?
-Does nestedness arise in 2009?
+Decide what analyses will go into Art's manuscript.
+Nestedness? Unipartite networks? Co-occurrence analyses?
 
+Do genotypes differ in their diversity or richness?
 <<>>=
-source('./src/pbr_load_data.R')
+source('../src/pbr_load_data.R')
                                         #with PB
 g08 <- geno.08[[1]]
 g09 <- geno.09[[1]]
                                         #composition
-perm.08 <- lapply(pbr.08,function(x,g) adonis(x~g),g=g08)
+perm.08 <- lapply(pbr.08,function(x,g) adonis(x~g),g=factor(g08))
 perm.09 <- lapply(pbr.09,function(x,g) adonis(x~g),g=g09)
 perm.08np <- lapply(pbr.08,function(x,g) adonis(x[,-1]~g),g=g08) #no pemphigus
 perm.09np <- lapply(pbr.09,function(x,g) adonis(x[,-1]~g),g=g09) #no pemphigus
@@ -53,13 +54,90 @@ R.09 <- lapply(pbr.09,function(x) apply(x,1,function(x) sum(sign(x))))
 R.08np <- lapply(pbr.08,function(x) apply(x[,-1],1,function(x) sum(sign(x))))
 R.09np <- lapply(pbr.09,function(x) apply(x[,-1],1,function(x) sum(sign(x))))
 summary(aov(R.08[[1]]~factor(g08)))
+summary(aov(R.08[[2]]~factor(g08)))
 summary(aov(R.09[[1]]~factor(g09)))
+summary(aov(R.09[[2]]~factor(g09)))
 summary(aov(R.08np[[1]]~factor(g08)))
+summary(aov(R.08np[[2]]~factor(g08)))
 summary(aov(R.09np[[1]]~factor(g09)))
-                                        #nestedness 2008
-nest.08 <- pblapply(pbr.08,function(x) oecosimu(x, nestfun="nestedtemp", "r1",nsimul = 999,burnin=50))
-                                        #nestedness 2009
-nest.09 <- pblapply(pbr.09,function(x) oecosimu(x, nestfun="nestedtemp", "r1",nsimul = 999,burnin=50))
+summary(aov(R.09np[[2]]~factor(g09)))
+
+@ 
+
+Regardless of PB, Richness is only affected by genotype in 2009 Control.
+
+Does nestedness arise in 2009?
+
+\textbf{Nestedness Results}
+\begin{itemize}
+\item 2008 PB Control nest = 12.109, p = 0.001
+\item 2008 PB Exclusion nest = 12.108, p = 0.001
+\item 2008 No-PB Control nest = 11.681, p = 0.001
+\item 2008 No-PB Exclusion nest = 11.936, p = 0.001
+\item 
+\item 2009 PB Control nest = 5.630898, p = 0.001
+\item 2009 PB Exclusion nest = 4.081755, p = 0.003
+\item 2009 No-PB Control nest = 5.1891, p = 0.003
+\item 2009 No-PB Exclusion nest = 3.7522, p = 0.007
+\end{itemize}
+
+<<>>=
+###Look at the change in abundance of species between 2008 and 2009
+d.Ac <- apply(pbr.08[[1]][,mv.08],2,sum)-apply(pbr.09[[1]][,mv.09],2,sum)
+d.Ax <- apply(pbr.08[[2]][,mv.08],2,sum)-apply(pbr.09[[2]][,mv.09],2,sum)
+mv.08 <- colnames(pbr.08[[1]]) %in% colnames(pbr.09[[1]]) #match vector
+mv.09 <- colnames(pbr.09[[1]]) %in% colnames(pbr.08[[1]]) #match vector
+
+hist(d.Ac)
+hist(d.Ax)
+barplot(rbind(d.Ac[abs(d.Ac) > 25|abs(d.Ax) > 25],d.Ax[abs(d.Ac) > 25|abs(d.Ax) > 25]),las=2,beside=TRUE)
+abline(h=c(25,100,250,500,-25,-100,-250,-500),lty=2)
+legend('topleft',legend=c('Control','Exclusion'),fill=c('black','lightgrey'),title='2008-2009',bg='white')
+
+@ 
+
+The treatment effect is much larger in 2009. 
+
+
+<<>>=
+###Co-occurrence patterns
+cnm.08c <- cnm.test(pbr.08[[1]])
+cnm.08x <- cnm.test(pbr.08[[2]])
+cnm.09c <- cnm.test(pbr.09[[1]])
+cnm.09x <- cnm.test(pbr.09[[2]])
+
+###Unipartite network
+net.08 <- lapply(pbr.08,CoNetwork,threshold=1)
+net.09 <- lapply(pbr.09,CoNetwork,threshold=1)
+mn.08c <- min.net(net.08[[1]],pbr.08[[1]])
+mn.08x <- min.net(net.08[[2]],pbr.08[[2]])
+mn.09c <- min.net(net.09[[1]],pbr.09[[1]])
+mn.09x <- min.net(net.09[[2]],pbr.09[[2]])
+par(mfcol=c(2,2))
+coord08 <- mgp(mn.08c[[1]],mn.08c[[2]],displaylabels=TRUE)
+title(main='2008')
+mgp(mn.08x[[1]],mn.08x[[2]],displaylabels=TRUE)
+mgp(mn.09c[[1]],mn.09c[[2]],displaylabels=TRUE)
+title(main='2009')
+mgp(mn.09x[[1]],mn.09x[[2]],displaylabels=TRUE)
+
+@ 
+
+<<>>=
+###Comparing over time
+###Can you use networkDynamic???
+###http://cran.r-project.org/web/packages/networkDynamic/vignettes/networkDynamic.pdf
+
+##Network distances
+nd.08 <- net.08[[1]] - net.08[[2]]
+nd.09 <- net.09[[1]] - net.09[[2]]
+nd.test <- function(x1,x2,plot.hist=FALSE){
+d <- as.numeric(x1[x1!=0|x2!=0] - x2[x1!=0|x2!=0])
+t.test(d)
+if (plot.hist){hist(d)}
+}
+nd.test(net.08[[1]],net.08[[2]],plot.hist=TRUE)
+nd.test(net.09[[1]],net.09[[2]],plot.hist=TRUE)
 
 @ 
 

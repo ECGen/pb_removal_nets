@@ -1,7 +1,7 @@
 ###Examining nestedness in the PB removal networks
 library(ComGenR)
-pbr.08 <- read.csv('./data/keith_pb_removal_2008.csv')
-pbr.09 <- read.csv('./data/keith_pb_removal_2009.csv')
+pbr.08 <- read.csv('../data/keith_pb_removal_2008.csv')
+pbr.09 <- read.csv('../data/keith_pb_removal_2009.csv')
 pbr.08[,2] <- as.character(pbr.08[,2])
 pbr.09[,2] <- as.character(pbr.09[,2])
                                         #fix typos
@@ -35,7 +35,7 @@ pbr.09 <- split(pbr.09,trt.09)
 geno.08 <- split(geno.08,trt.08)
 geno.09 <- split(geno.09,trt.09)
                                         #add pb?
-pb08 <- read.csv('./data/P betae excl treatment effect 2008.csv')
+pb08 <- read.csv('../data/P betae excl treatment effect 2008.csv')
 colnames(pb08) <- as.character(pb08[1,])
 pb08 <- data.frame(genotype=pb08[,1],tree=pb08[,2],x=as.numeric(pb08[,3]),c=as.numeric(pb08[,4]))
 pb08.tree <- c(as.character(pb08[,2]),as.character(pb08[,2]))
@@ -45,12 +45,12 @@ trt.tree.pbr <- paste(tree.08,trt.08)
 trt.tree.pb <- paste(pb08.tree,pb08.trt)
 pb <- pb[match(trt.tree.pbr,trt.tree.pb)]
 check <- trt.tree.pb[match(trt.tree.pbr,trt.tree.pb)]
-if (all(check==trt.tree.pbr)){print('You are good to go!')}else{warning('Oh no!!!')}
+if (all(check==trt.tree.pbr)){print('Good to go!')}else{warning('Oh no!!!')}
 pb <- split(pb,trt.08)
 pbr.08[[1]] <- cbind(pb=pb[[1]],pbr.08[[1]])
 pbr.08[[2]] <- cbind(pb=pb[[2]],pbr.08[[2]])
                                         #
-pb09 <- read.csv('./data/2009Pbetaetreatmenteffect.csv')
+pb09 <- read.csv('../data/2009Pbetaetreatmenteffect.csv')
 pb09 <- data.frame(genotype=pb09[,1],tree=pb09[,2],x=as.numeric(pb09[,3]),c=as.numeric(pb09[,4]))
 pb09[pb09[,3]==1,3] <- 'x'
 pb09[pb09[,3]==2,3] <- 'c'

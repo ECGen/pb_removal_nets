@@ -1,0 +1,8 @@
+$c oecosimu object  Call: oecosimu(comm = x[, -1], nestfun = "nestedtemp", method = "r1", nsimul = 999, burnin = 50)  simulation method r1 with 999 simulations  alternative hypothesis: statistic is less or greater than simulated values  nestedness temperature: 11.68138  with matrix fill 0.1061644             
+statistic       z   mean   2.5%    50%  97.5% Pr(sim.)     
+11.681 -3.3656 14.262 12.816 14.263 15.896    0.001 *** 
+--- Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1  
+$x oecosimu object  Call: oecosimu(comm = x[, -1], nestfun = "nestedtemp", method = "r1", nsimul = 999, burnin = 50)  simulation method r1 with 999 simulations  alternative hypothesis: statistic is less or greater than simulated values  nestedness temperature: 11.93609  with matrix fill 0.1013699             
+statistic       z   mean   2.5%    50%  97.5% Pr(sim.)     
+11.936 -3.1682 14.414 12.974 14.375 15.925    0.001 *** 
+--- Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 

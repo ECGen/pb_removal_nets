@@ -1,0 +1,8 @@
+
+
+
+###Co-occurrence patterns
+cnm.08c <- cnm.test(pbr.08[[1]])
+cnm.08x <- cnm.test(pbr.08[[2]])
+cnm.09c <- cnm.test(pbr.09[[1]])
+cnm.09x <- cnm.test(pbr.09[[2]])
