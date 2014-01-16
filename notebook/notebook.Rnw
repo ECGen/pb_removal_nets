@@ -133,11 +133,24 @@ nd.08 <- net.08[[1]] - net.08[[2]]
 nd.09 <- net.09[[1]] - net.09[[2]]
 nd.test <- function(x1,x2,plot.hist=FALSE){
 d <- as.numeric(x1[x1!=0|x2!=0] - x2[x1!=0|x2!=0])
-t.test(d)
-if (plot.hist){hist(d)}
+print(t.test(d))
+if (plot.hist){plot(density(d),main='',xlab='Difference X1-X2')}
 }
+nc.test <- function(x1,x2,plot.cor=FALSE){
+print(cor.test(as.numeric(x1[x1!=0|x2!=0]),as.numeric(x2[x1!=0|x2!=0])))
+if (plot.cor){
+plot(as.numeric(x1[x1!=0|x2!=0]),as.numeric(x2[x1!=0|x2!=0],pch=19))
+abline(lm(as.numeric(x2[x1!=0|x2!=0])~as.numeric(x1[x1!=0|x2!=0])))
+}
+}
+
 nd.test(net.08[[1]],net.08[[2]],plot.hist=TRUE)
 nd.test(net.09[[1]],net.09[[2]],plot.hist=TRUE)
+
+nc.test(net.08[[1]],net.08[[2]],plot.cor=TRUE)
+nc.test(net.09[[1]],net.09[[2]],plot.cor=TRUE)
+
+###QAP test
 
 @ 
 
