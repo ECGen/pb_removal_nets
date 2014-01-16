@@ -61,14 +61,3 @@ pbr.09[[1]] <- cbind(pb=pb[[1]],pbr.09[[1]])
 pbr.09[[2]] <- cbind(pb=pb[[2]],pbr.09[[2]])
 pbr.gc08 <- lapply(pbr.08,mean.g,g=as.character(geno.08[[1]]))
 pbr.gc09 <- lapply(pbr.09,mean.g,g=as.character(geno.09[[1]]))
-##With P. betae
-pbr08pb.r1 <- pblapply(pbr.gc08,function(x) oecosimu(x, nestfun="nestedtemp", "r1",nsimul = 999,burnin=50))
-pbr09pb.r1 <- pblapply(pbr.gc09,function(x) oecosimu(x, nestfun="nestedtemp", "r1",nsimul = 999,burnin=50))
-##Without P. betae
-pbr08.r1 <- pblapply(pbr.gc08,function(x) oecosimu(x[,-1], nestfun="nestedtemp", "r1",nsimul = 999,burnin=50))
-pbr09.r1 <- pblapply(pbr.gc09,function(x) oecosimu(x[,-1], nestfun="nestedtemp", "r1",nsimul = 999,burnin=50))
-#Save to file
-dput(pbr.08pb.r1,file='./results/nest_pb08r1.Rdata')
-dput(pbr.09pb.r1,file='./results/nest_pb09r1.Rdata')
-dput(pbr.08.r1,file='./results/nest_08r1.Rdata')
-dput(pbr.09.r1,file='./results/nest_09r1.Rdata')

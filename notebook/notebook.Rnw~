@@ -37,8 +37,20 @@ community network structure and stability}
 
 Does nestedness change with removal of P. betae?
 
+Currently running on romer.
+
+          nest    z      mean   2.5%   50%    97.5%    Pr(sim.)  
+c08+pb    30.132 -1.84   32.257 30.172 32.234 34.542   0.051 .
+x08+pb    30.388 -1.8631 32.843 30.556 32.718 35.54    0.041 *
+
 <<>>=
 
+getwd()
+nest.results <- list()
+nest.results[[1]] <- get('/Users/Aeolus/projects/pb_removal_nets/results/nest_pb08r1.Rdata')
+nest.results[[2]] <- get('./results/nest_pb09r1.Rdata')
+nest.results[[3]] <- get('./results/nest_08r1.Rdata')
+nest.results[[4]] <- get('./results/nest_09r1.Rdata')
 
 @ 
 
