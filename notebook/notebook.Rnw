@@ -33,7 +33,90 @@ community network structure and stability}
 \item Remove resistant genotypes
 \end{itemize}
 
+\section{20 Jan 2014}
+Organized and sent a results summary (pbr_results_mkl_17jan2014.docx)
+to Art. 
+
+
+\section{17 Jan 2014}
+Checking QAP and null model tests
+
+<<>>=
+                                        #
+
+###08c and nest no PB on desktop
+read.csv('../results/cnm_results.csv')
+read.csv('../results/cnm_npb_results.csv')
+                                        #
+qap.08 <- readLines('../results/qap_results_08.txt')
+qap.09 <- readLines('../results/qap_results_09.txt')
+qap.d08 <- as.numeric(readLines('../results/qap_dist_08.csv')[-1])
+qap.d09 <- as.numeric(readLines('../results/qap_dist_09.csv')[-1])
+qap.obs08 <- sum((net.08[[1]]-net.08[[2]])^2)
+qap.obs09 <- sum((net.09[[1]]-net.09[[2]])^2)
+qap.ses08 <- (qap.obs08-mean(qap.d08))/sd(qap.d08)
+qap.ses09 <- (qap.obs09-mean(qap.d09))/sd(qap.d09)
+
+                                        #
+net.dif <- function(dat,dat2=NULL,g1=NULL,g2=NULL){
+  sum((dat[,,g1]-dat[,,g2])^2)
+}
+                                        #
+reduce.net <- function(x){
+  if (length(x)!=2){warning('Error: matrix list not of length 2!')}
+  x1 <- x[[1]]
+  x2 <- x[[2]]
+  if ((dim(x1)[1]!=dim(x1)[2])|(dim(x2)[1]!=dim(x2)[2])){warning('Matrices are not square!')}
+  if (any(dim(x1)!=dim(x2))){warning('Dimensions are not equal!')}
+  if (any(rownames(x1)!=rownames(x2))){warning('Node names are mismatched!')}
+  out <- list()
+  out[[1]] <- x1[(apply(x1,1,sum)!=0|apply(x2,1,sum)!=0),(apply(x1,2,sum)!=0|apply(x2,2,sum)!=0)]
+  out[[2]] <- x2[(apply(x1,1,sum)!=0|apply(x2,1,sum)!=0),(apply(x1,2,sum)!=0|apply(x2,2,sum)!=0)]
+  names(out) <- names(x)
+  return(x)
+}
+net.08 <- reduce.net(net.08)
+net.09 <- reduce.net(net.09)
+qin.08 <- array(NA,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),2))
+qin.08[,,1] <- net.08[[1]]
+qin.08[,,2] <- net.08[[2]]
+qin.09 <- array(NA,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),2))
+qin.09[,,1] <- net.09[[1]]
+qin.09[,,2] <- net.09[[2]]
+                                        #historgram of QAP output
+par(mfrow=c(1,2))
+hist(qap.d08,xlim=c(0,65),main='2008')
+abline(v=net.dif(qin.08,g1=1,g2=2),lty=2)
+hist(qap.d09,xlim=c(0,35),main='2009')
+abline(v=net.dif(qin.09,g1=1,g2=2),lty=2)
+                                        #plot networks
+coord08 <- mgp(net.08[[1]],pbr.08[[1]],displaylabels=FALSE)
+coord09 <- mgp(net.09[[1]],pbr.09[[1]],displaylabels=FALSE)
+rownames(net.08[[1]]) <- rownames(net.08[[2]]) <- colnames(net.08[[1]]) <- colnames(net.08[[2]]) <- (1:ncol(net.08[[1]]))
+rownames(net.09[[1]]) <- rownames(net.09[[2]]) <- colnames(net.09[[1]]) <- colnames(net.09[[2]]) <- (1:ncol(net.09[[1]]))
+par(mfcol=c(2,2))
+mgp(net.08[[1]][apply(net.08[[1]],1,sum)!=0,apply(net.08[[1]],2,sum)!=0],
+    pbr.08[[1]][apply(net.08[[1]],1,sum)!=0],displaylabels=TRUE,
+    my.coord=coord08[apply(net.08[[1]],1,sum)!=0,],loc=FALSE)
+title(main='2008',ylab='Control',font.lab=2)
+mgp(net.08[[2]][apply(net.08[[2]],1,sum)!=0,apply(net.08[[2]],2,sum)!=0],
+    pbr.08[[2]][apply(net.08[[2]],1,sum)!=0],displaylabels=TRUE,
+    my.coord=coord08[apply(net.08[[2]],1,sum)!=0,],loc=FALSE)
+title(ylab='Exclusion',font.lab=2)
+mgp(net.09[[1]][apply(net.09[[1]],1,sum)!=0,apply(net.09[[1]],2,sum)!=0],
+    pbr.09[[1]][apply(net.09[[1]],1,sum)!=0],displaylabels=TRUE,
+    my.coord=coord09[apply(net.09[[1]],1,sum)!=0,],loc=FALSE)
+title(main='2009')
+mgp(net.09[[2]][apply(net.09[[2]],1,sum)!=0,apply(net.09[[2]],2,sum)!=0],
+    pbr.09[[2]][apply(net.09[[2]],1,sum)!=0],displaylabels=TRUE,
+    my.coord=coord09[apply(net.09[[2]],1,sum)!=0,],loc=FALSE)
+
+@ 
+
+
 \section{16 Jan 2014}
+Currently running QAP tests and co-occurrence null modeling tests on Romer
+
 Decide what analyses will go into Art's manuscript.
 Nestedness? Unipartite networks? Co-occurrence analyses?
 
@@ -101,10 +184,10 @@ The treatment effect is much larger in 2009.
 
 <<>>=
 ###Co-occurrence patterns
-cnm.08c <- cnm.test(pbr.08[[1]])
-cnm.08x <- cnm.test(pbr.08[[2]])
-cnm.09c <- cnm.test(pbr.09[[1]])
-cnm.09x <- cnm.test(pbr.09[[2]])
+## cnm.08c <- cnm.test(pbr.08[[1]])
+## cnm.08x <- cnm.test(pbr.08[[2]])
+## cnm.09c <- cnm.test(pbr.09[[1]])
+## cnm.09x <- cnm.test(pbr.09[[2]])
 
 ###Unipartite network
 net.08 <- lapply(pbr.08,CoNetwork,threshold=1)
