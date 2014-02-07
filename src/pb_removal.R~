@@ -143,13 +143,10 @@ t.test(nodeDist(net.09))
 ## print('Done!')
                                         #qap
 library(sna)
-qap.input08 <- array(NA,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),length(net.08)))
-qap.input08[,,1] <- net.08[[1]]
-qap.input08[,,2] <- net.08[[2]]
-qap.input09 <- array(NA,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),length(net.09)))
-qap.input09[,,1] <- net.09[[1]]
-qap.input09[,,2] <- net.09[[2]]
-gcor(qap.input08,g1=1,g2=2)
-
-qap.results08 <- qaptest(qap.input08,gcor,g1=1,g2=2)
-qap.results09 <- qaptest(qap.input09,gcor,g1=1,g2=2)
+                                        #see qap_test.R for how analysis was run
+readLines('../results/qap_results_08.txt')
+readLines('../results/qap_results_09.txt')
+qap.d.08 <- read.csv('../results/qap_dist_08.csv')
+qap.d.09 <- read.csv('../results/qap_dist_09.csv')
+hist(qap.d.08[,1])
+hist(qap.d.09[,1])

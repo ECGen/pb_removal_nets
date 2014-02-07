@@ -84,7 +84,7 @@ if (rm.resistant){
 
 ###Networks
 library(sna)
-source('~/projects/dissertation/projects/lichen_coo/src/seenetR.R')
+library(ComGenR)
 source('~/projects/pb_removal_nets/src/helper_funcs.R')
                                         #
 print('Modeling networks')
@@ -143,13 +143,26 @@ t.test(nodeDist(net.09))
 ## print('Done!')
                                         #qap
 library(sna)
-qap.input08 <- array(NA,dim=c(nrow(net.08[[1]]),ncol(net.08[[1]]),length(net.08)))
-qap.input08[,,1] <- net.08[[1]]
-qap.input08[,,2] <- net.08[[2]]
-qap.input09 <- array(NA,dim=c(nrow(net.09[[1]]),ncol(net.09[[1]]),length(net.09)))
-qap.input09[,,1] <- net.09[[1]]
-qap.input09[,,2] <- net.09[[2]]
-gcor(qap.input08,g1=1,g2=2)
-
-qap.results08 <- qaptest(qap.input08,gcor,g1=1,g2=2)
-qap.results09 <- qaptest(qap.input09,gcor,g1=1,g2=2)
+                                        #see qap_test.R for how analysis was run
+readLines('../results/qap_results_08.txt')
+readLines('../results/qap_results_09.txt')
+qap.d.08 <- read.csv('../results/qap_dist_08.csv')
+qap.d.09 <- read.csv('../results/qap_dist_09.csv')
+hist(qap.d.08[,1])
+hist(qap.d.09[,1])
+                                        #nestedness plots and looking at node weights
+                                        # percent max convert
+library(gplots)
+smc.09c <- apply(pbr.09$c,2,function(x) if (any(x!=0)){x/max(x)}else{x})
+tot.09c <- apply(smc.09c,1,sum)
+mu <- tapply(tot.09c,geno.09$c,mean)
+se <- tapply(tot.09c,geno.09$c,function(x) sd(x)/sqrt(length(x)))
+1000      1008      1017      1020       996    coal 3     HE-10      Rm-2      T-15      WC-5 
+1           2       3          4          5       6          7         8          9        10
+deg.09c <- c(3,6,7,1,10,8,5,2,4,9)
+se <- se[deg.09c]
+mu <- mu[deg.09c]
+barplot2(mu,plot.ci=TRUE,ci.u=mu+se,ci.l=mu-se,ylab='Toal Percent Species Maximums')
+                                        #
+source('~/projects/packages/ComGenR_development/src/cgREML.R')
+round(cgREML(tot.09c,geno.09$c),5)
