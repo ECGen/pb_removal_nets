@@ -30,7 +30,13 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{18 Feb 2014}
+- look at modularity (pbr_modularity.R now running on Romer)
+
+
 \section{6 Feb 2014}
+
+
 Was going to re-make figure 5 for SGN using build.bpn, but it doesn't
 make sense because the PBR datasets don't have tree level
 replication. 

@@ -30,6 +30,11 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{6 Feb 2014}
+Was going to re-make figure 5 for SGN using build.bpn, but it doesn't
+make sense because the PBR datasets don't have tree level
+replication. 
+
 \section{27 Jan 2014}
 Currently running a qap test that takes the difference in nestedness
 between two networks. Running on hoth compute-0-0 start = 3:20pm.
