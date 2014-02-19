@@ -6,17 +6,16 @@ library(methods)
 source('../src/pbr_load_data.R')
 m <- sign(pbr.09$c)[,apply(pbr.09$c,2,sum)!=0]
 n <- 1000
-print('Null Modules')
+                                        #generate randomized matrices
 null <- list()
 mod.null <- list()
-for (i in 1:n){null[[i]] <- commsimulator(m,method='r1',thin=100);print(i)}
-for (i in 1:length(null)){mod.null[[i]] <- slot(computeModules(null[[i]]),name='likelihood');print(i)}
-print('Observed Modules')
+for (i in 1:n){null[[i]] <- commsimulator(m,method='r1',thin=100)}
+
+mod.null <- lapply(null,function(x) slot(computeModules(x),name='likelihood'))
 mod.null <- unlist(mod.null)
 mod.obs <- computeModules(m)
 z <- (mod.obs-mean(mod.null))/sd(mod.null)
 p <- c(lower.p=length(mod.null[mod.null<=mod.obs]),upper.p=length(mod.null[mod.null>=mod.obs]))/n
 out <- list(null=mod.null,results=c(obs=mod.obs,z=z,p))
-print('saving...')
 dput(out,file='../results/pbr_modularity.R')
 
