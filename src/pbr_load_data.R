@@ -1,4 +1,5 @@
 ###Examining nestedness in the PB removal networks
+library(ComGenR)
 pbr.08 <- read.csv('../data/keith_pb_removal_2008.csv')
 pbr.09 <- read.csv('../data/keith_pb_removal_2009.csv')
 pbr.08[,2] <- as.character(pbr.08[,2])
