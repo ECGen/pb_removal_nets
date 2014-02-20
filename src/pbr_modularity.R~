@@ -4,7 +4,6 @@
 library(bipartite)
 library(methods)
 source('../src/pbr_load_data.R')
-
 m <- sign(pbr.09$c)[,apply(pbr.09$c,2,sum)!=0]
 n <- 1000
 print('Null Modules')

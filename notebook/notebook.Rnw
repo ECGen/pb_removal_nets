@@ -30,6 +30,26 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{20 Feb 2014}
+
+Modularity results:
+
+<<>>=
+library(bipartite)
+source('../src/pbr_load_data.R')
+m <- sign(pbr.09$c)[,apply(pbr.09$c,2,sum)!=0]
+                                        #mod.obs <- slot(computeModules(m),'likelihood')
+mod.obs <- 0.220599
+mod.null <- readLines('../results/bitmodout.txt')
+mod.null <- unlist(strsplit(mod.null,split=' '))
+mod.null <- as.numeric(mod.null)
+z <- (mod.obs-mean(mod.null))/sd(mod.null)
+hist(mod.null)
+abline(v=mod.obs)
+
+@ 
+
+
 \section{18 Feb 2014}
 - look at modularity (pbr_modularity.R now running on Romer)
 
