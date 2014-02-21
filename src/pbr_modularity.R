@@ -78,5 +78,5 @@ z <- (mod.obs-mean(mod.null))/sd(mod.null)
 p <- c(lower.p=length(mod.null[mod.null<=mod.obs]),upper.p=length(mod.null[mod.null>=mod.obs]))/n
 out <- list(null=mod.null,results=c(obs=mod.obs,z=z,p))
 print('saving...')
-dput(out,file='../results/pbr_modularity.R')
+dput(out,file='../results/pbr_mod_out.R')
 
