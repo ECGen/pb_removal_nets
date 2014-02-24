@@ -34,7 +34,7 @@ community network structure and stability}
 Results form hoth
 
 <<>>=
-x <- dget('~/Desktop/pbr_modularity.R')x
+x <- dget('~/Desktop/pbr_modularity.R')
 
 
 @ 
