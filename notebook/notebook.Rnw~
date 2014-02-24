@@ -30,7 +30,17 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{21 Feb 2014}
+Results form hoth
+
+<<>>=
+x <- dget('~/Desktop/pbr_modularity.R')
+
+
+@ 
+
 \section{20 Feb 2014}
+
 Re-running modularity on Hoth with a burnin.
 
 <<>>=
@@ -48,6 +58,7 @@ p <- c(lower.p=length(mod.null[mod.null<=mod.obs]),upper.p=length(mod.null[mod.n
 out <- list(null=mod.null,results=c(obs=mod.obs,z=z,p))
 hist(mod.null,xlim=c(min(mod.null)-0.075,max(mod.null)+0.075))
 abline(v=mod.obs)
+
 
 @ 
 
