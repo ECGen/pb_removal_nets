@@ -38,25 +38,13 @@ Made null matrices, but the operations are too slow to perform on
 Aeolus. Setting up on Hoth.
 
 <<>>=
-#load data
-source('../src/pbr_load_data_hoth.R')
-prn.08 <- list(c=pbr.08$c,x=pbr.08$x,cnpb=pbr.08$c[,colnames(pbr.08$c)!='pb'],xnpb=pbr.08$x[,colnames(pbr.08$x)!='pb'])
-prn.09 <- list(c=pbr.09$c,x=pbr.09$x,cnpb=pbr.09$c[,colnames(pbr.09$c)!='pb'],xnpb=pbr.09$x[,colnames(pbr.09$x)!='pb'])
-#run modularity
-##move simulated files up onto the server
-##make a shell script for each one
-
-###test to make sure similar results rae obtained using your null communities
-nt08.c <- list()
-for (i in 1:500){nt08.c[[i]] <- read.csv(paste('~/Desktop/null08/cpb/',i,sep=''))}
-nt08.c <- lapply(nt08.c,nested)
-nt08.c <- unlist(nt08.c)
-plot(density(nt08.c),col='red')
-nest08.c <- oecosimu(prn.08$c,nestfun=nested,method='r1',burnin=500)
-test <- commsimulator(prn.08$c,method='r1',thin=500)
-for (i in 1:500){test <- commsimulator(test,method='r1',thin=500)}
-nested(test)
-lines(density(nest08.c$oecosimu$simulated),col='green')
+#load results
+##       z.binmatnest2                 means                  pval 
+##   "-23.3671553843538"    "40.4829698265798"                "0.25" 
+##            simulated1            simulated2            simulated3 
+##    "41.1853219095849"     "41.183996440613"    "39.0795911295416" 
+##                method statistic.binmatnest2           alternative 
+##                 "r00"    "12.0834221842896"           "two.sided" 
 
 
 @ 
