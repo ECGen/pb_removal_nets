@@ -1,5 +1,5 @@
 library(bipartite)
-source('../src/pbr_load_data.R')
+source('../src/pbr_load_data_hoth.R')
 prn.09 <- list(c=pbr.09$c,x=pbr.09$x,cnpb=pbr.09$c[,colnames(pbr.09$c)!='pb'],xnpb=pbr.09$x[,colnames(pbr.09$x)!='pb'])
                                         #run nestedness
 nest09c <- oecosimu(prn.09$c,nestfun=nestedness,method='r1')
