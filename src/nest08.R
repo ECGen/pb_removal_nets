@@ -4,14 +4,14 @@ prn.08 <- list(c=pbr.08$c,x=pbr.08$x,cnpb=pbr.08$c[,colnames(pbr.08$c)!='pb'],xn
                                         #run nestedness
                                         #write results
 print('2008 Control')
-nest08c <- oecosimu(prn.08$c,nestfun=nestedness,method='r1')
+nest08c <- oecosimu(prn.08$c,nestfun=nested,method='r1')
 dput(nest08c,'../results/nest08c.results')
 print('2008 Exclusion')
-nest08x <- oecosimu(prn.08$x,nestfun=nestedness,method='r1')
+nest08x <- oecosimu(prn.08$x,nestfun=nested,method='r1')
 dput(nest08x,'../results/nest08x.results')
 print('2008 Control no pb')
-nest08cnpb <- oecosimu(prn.08$cnpb,nestfun=nestedness,method='r1')
+nest08cnpb <- oecosimu(prn.08$cnpb,nestfun=nested,method='r1')
 dput(nest08cnpb,'../results/nest08cnpb.results')
 print('2008 Exclusion no pb')
-nest08xnpb <- oecosimu(prn.08$xnpb,nestfun=nestedness,method='r1')
+nest08xnpb <- oecosimu(prn.08$xnpb,nestfun=nested,method='r1')
 dput(nest08xnpb,'../results/nest08xnpb.results')
