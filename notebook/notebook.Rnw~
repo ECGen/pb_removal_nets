@@ -30,6 +30,21 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{3 Mar 2014}
+
+\begin{enumerate}
+\item Conducted modularity analysis: P. betae tends to decrease
+  modularity, this could be an argument for P. betae's influence on
+  the community (i.e. it connects accross modules).
+\item Indicator species analysis showed:
+  \begin{enumerate}
+  \item Tip-roller, Anthocorid, BEB, midge, leaf tiers were all
+    indicators but in different years and only in exclusion
+  \item There were multiple species that indicate resistant (pb) and
+    susceptible (beb, mirid,see others) genotypes
+  \end{enumerate}
+\end{enumerate}
+
 \section{28 Feb 2014}
 Compare modularity and nestedness of control, removal, control (-pb)
 and removal (-pb) for 2008 and 2009
@@ -38,26 +53,24 @@ Made null matrices, but the operations are too slow to perform on
 Aeolus. Setting up on Hoth.
 
 <<>>=
-#load data
-source('../src/pbr_load_data_hoth.R')
-prn.08 <- list(c=pbr.08$c,x=pbr.08$x,cnpb=pbr.08$c[,colnames(pbr.08$c)!='pb'],xnpb=pbr.08$x[,colnames(pbr.08$x)!='pb'])
-prn.09 <- list(c=pbr.09$c,x=pbr.09$x,cnpb=pbr.09$c[,colnames(pbr.09$c)!='pb'],xnpb=pbr.09$x[,colnames(pbr.09$x)!='pb'])
-#run modularity
-##move simulated files up onto the server
-##make a shell script for each one
-
-###test to make sure similar results rae obtained using your null communities
-nt08.c <- list()
-for (i in 1:500){nt08.c[[i]] <- read.csv(paste('~/Desktop/null08/cpb/',i,sep=''))}
-nt08.c <- lapply(nt08.c,nested)
-nt08.c <- unlist(nt08.c)
-plot(density(nt08.c),col='red')
-nest08.c <- oecosimu(prn.08$c,nestfun=nested,method='r1',burnin=500)
-test <- commsimulator(prn.08$c,method='r1',thin=500)
-for (i in 1:500){test <- commsimulator(test,method='r1',thin=500)}
-nested(test)
-lines(density(nest08.c$oecosimu$simulated),col='green')
-
+#load results
+##       z.binmatnest2                 means                  pval 
+##   "-23.3671553843538"    "40.4829698265798"                "0.25" 
+##            simulated1            simulated2            simulated3 
+##    "41.1853219095849"     "41.183996440613"    "39.0795911295416" 
+##                method statistic.binmatnest2           alternative 
+##                 "r00"    "12.0834221842896"           "two.sided" 
+n <- 104
+n08c <- as.numeric(as.character(read.csv('../results/nest08c.results')[n,]))
+n08x <- as.numeric(as.character(read.csv('../results/nest08x.results')[n,]))
+n08cnpb <- as.numeric(as.character(read.csv('../results/nest08cnpb.results')[n,]))
+n08xnpb <- as.numeric(as.character(read.csv('../results/nest08xnpb.results')[n,]))
+n09c <- as.numeric(as.character(read.csv('../results/nest09c.results')[n,]))
+n09x <- as.numeric(as.character(read.csv('../results/nest09x.results')[n,]))
+n09cnpb <- as.numeric(as.character(read.csv('../results/nest09cnpb.results')[n,]))
+n09xnpb <- as.numeric(as.character(read.csv('../results/nest09xnpb.results')[n,]))
+c(n08c,n08x,n08cnpb,n08xnpb)
+c(n09c,n09x,n09cnpb,n09xnpb)
 
 @ 
 
@@ -229,6 +242,8 @@ perm.08 <- lapply(pbr.08,function(x,g) adonis(x~g),g=factor(g08))
 perm.09 <- lapply(pbr.09,function(x,g) adonis(x~g),g=g09)
 perm.08np <- lapply(pbr.08,function(x,g) adonis(x[,-1]~g),g=g08) #no pemphigus
 perm.09np <- lapply(pbr.09,function(x,g) adonis(x[,-1]~g),g=g09) #no pemphigus
+perm.08rel <- lapply(pbr.08,function(x,g) adonis(apply(x,2,function(x) if(any(x!=0)){x/max(x)}else{x})~g),g=factor(g08))
+perm.09rel <- lapply(pbr.09,function(x,g) adonis(apply(x,2,function(x) if(any(x!=0)){x/max(x)}else{x})~g),g=factor(g09))
                                         #richness
 R.08 <- lapply(pbr.08,function(x) apply(x,1,function(x) sum(sign(x))))
 R.09 <- lapply(pbr.09,function(x) apply(x,1,function(x) sum(sign(x))))
@@ -242,6 +257,62 @@ summary(aov(R.08np[[1]]~factor(g08)))
 summary(aov(R.08np[[2]]~factor(g08)))
 summary(aov(R.09np[[1]]~factor(g09)))
 summary(aov(R.09np[[2]]~factor(g09)))
+
+###Indicator species analysis
+library(labdsv)
+isp.08 <- lapply(pbr.08,function(x,g) indval(x[,apply(x,2,sum)!=0],g),g=as.character(geno.08$c))
+isp.09 <- lapply(pbr.09,function(x,g) indval(x[,apply(x,2,sum)!=0],g),g=as.character(geno.09$c))
+lapply(isp.08,summary)
+lapply(isp.09,summary)
+#using resistance as an indicator
+r.08 <- as.character(geno.08$c)
+r.08[r.08==1008|r.08==1020] <- 1
+r.08[r.08!=1] <- 0
+r.09 <- as.character(geno.09$c)
+r.09[r.09==1008|r.09==1020] <- 1
+r.09[r.09!=1] <- 0
+ispr.08 <- lapply(pbr.08,function(x,r) indval(x[,apply(x,2,sum)!=0],r),r=r.08)
+ispr.09 <- lapply(pbr.09,function(x,r) indval(x[,apply(x,2,sum)!=0],r),r=r.09)
+lapply(ispr.08,summary)
+lapply(ispr.09,summary)
+#modules
+library(bipartite)
+#mod.08 <- lapply(pbr.08,function(x) computeModules(x[,apply(x,2,sum)!=0],steps=10000))
+#mod.09 <- lapply(pbr.09,function(x) computeModules(x[,apply(x,2,sum)!=0],steps=10000))
+lapply(mod.08,function(x) slot(x,'likelihood'))
+lapply(mod.09,function(x) slot(x,'likelihood'))
+mod.08npb <- lapply(pbr.08,function(x) computeModules(x[,apply(x,2,sum)!=0&colnames(x)!='pb'],steps=10000))
+mod.09npb <- lapply(pbr.09,function(x) computeModules(x[,apply(x,2,sum)!=0&colnames(x)!='pb'],steps=10000))
+unlist(lapply(mod.08,function(x) slot(x,'likelihood')))
+unlist(lapply(mod.08npb,function(x) slot(x,'likelihood')))
+unlist(lapply(mod.09,function(x) slot(x,'likelihood')))
+unlist(lapply(mod.09npb,function(x) slot(x,'likelihood')))
+
+
+###Conduct a modularity analysis only with those species that show a significant response to genotype (SRG)
+library(ComGenR)
+library(lme4)
+cgREML <- function(x,g,cv='covariate'){
+  if (any(cv=='covariate')){
+    x.lmer <- lmer(x~(1|g))
+    x.lm <- lm(x~1)
+    chi2 <- -2*logLik(x.lm, REML=T) +2*logLik(x.lmer, REML=T)
+    p.chi2 <- pchisq(chi2,df=1,lower.tail=FALSE)
+  }else{
+    x.lmer <- lmer(x~(1|g)+cv)
+    x.lm <- lm(x~1)
+    chi2 <- -2*logLik(x.lm, REML=T) +2*logLik(x.lmer, REML=T)
+    p.chi2 <- pchisq(chi2,df=1,lower.tail=FALSE)
+  }
+  return(c(chi2=chi2,P.value=p.chi2))
+}
+srg <- function(x,g){
+  test1 <- apply(x[,apply(x,2,sum)!=0],2,function(x,g) cgREML(x,g)[[2]],g=g)
+  test2 <- apply(x[,apply(x,2,sum)!=0],2,function(x,g) chisq.test(x,g)[[3]],g=g)
+  test3 <- apply(x[,apply(x,2,sum)!=0],2,function(x,g) unlist(summary(aov(x~g)))[9],g=g)
+}
+srg.08 <- lapply(
+
 
 @ 
 
