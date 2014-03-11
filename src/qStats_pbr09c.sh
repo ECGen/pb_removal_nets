@@ -7,7 +7,7 @@
 #$ -l h_rt=0:10:00
 
 ###Submission loop:
-###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -v case=$case $cgssrc/qStats_pbr09c.sh; sleep 1; done
+###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -v case=$case $pbrsrc/qStats_pbr09c.sh; sleep 1; done
 ###Note: sleep can be used to delay submissions
 
 echo "starting case number $case"
