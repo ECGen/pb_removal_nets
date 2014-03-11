@@ -7,15 +7,15 @@
 #$ -l h_rt=0:10:00
 
 ###Submission loop:
-###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -cwd -v case=$case $cgssrc/qStats_coms.sh; sleep 1; done
+###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -v case=$case $cgssrc/qStats_pbr09c.sh; sleep 1; done
 ###Note: sleep can be used to delay submissions
 
+echo "starting case number $case"
+cd $case
 cp /home/mlau/projects/cg_simulations/src/cgsMods.R ./
 cp /home/mlau/projects/cg_simulations/src/cgsNest.R ./
-echo "starting case number $case"
 Rscript cgsMods.R null.csv ~/projects/pb_removal_nets/results/null_mods09c.txt
 Rscript cgsNest.R null.csv ~/projects/pb_removal_nets/results/null_nest09c.txt
-echo "completed case number $case"
 rm ./cgsMods.R
 rm ./cgsNest.R
-
+echo "completed case number $case"
