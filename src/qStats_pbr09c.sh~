@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
-#$ -N coms
+#$ -N pbr09
 #$ -pe mpi 1
 #$ -M mkl48@nau.edu
 #$ -m as
 #Wall time:
-#$ -l h_rt=0:10:00
+#$ -l h_rt=0:01:00
 
 ###Submission loop:
 ###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -v case=$case $pbrsrc/qStats_pbr09c.sh; sleep 1; done
