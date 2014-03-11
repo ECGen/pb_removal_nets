@@ -16,7 +16,7 @@ null <- list()
 for (i in 1:n.null){
   print(i)
   dir.create(paste('../data/null09c/',i,sep=''))
-  for (i in 1:burnin){burn <- commsimulator(burn,method=method)}
+  for (j in 1:burnin){burn <- commsimulator(burn,method=method)}
   out <- commsimulator(burn,method=method)
   write.csv(out,paste(paste('../data/null09c/',i,sep=''),'null',sep='/'),row.names=FALSE)
 }
