@@ -8,15 +8,15 @@ com <- pbr.09$c
 com[com!=0] <- 1
 com <- com[,apply(com,2,sum)!=0]
 method <- 'r1'
-burnin <- 500
+burnin <- 100
 n.null <- 5000
                                         #burn
 burn <- commsimulator(com,method=method)
 null <- list()
-for (i in 1:burnin){burn <- commsimulator(burn,method=method)}
 for (i in 1:n.null){
   print(i)
   dir.create(paste('../data/null09c/',i,sep=''))
+  for (i in 1:burnin){burn <- commsimulator(burn,method=method)}
   out <- commsimulator(burn,method=method)
   write.csv(out,paste(paste('../data/null09c/',i,sep=''),paste('null',i,sep=''),sep='/'),row.names=FALSE)
 }
