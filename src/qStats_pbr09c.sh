@@ -7,7 +7,8 @@
 #$ -l h_rt=0:01:00
 
 ###Submission loop:
-###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -v case=$case $pbrsrc/qStats_pbr09c.sh; sleep 1; done
+###rm ~/qmonitor/*;rm ../../results/null_*;ql=$(ls -d $PWD/*);echo $ql | wc
+###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -v case=$case $pbrsrc/qStats_pbr09c.sh; sleep 1; done;echo 'Hoth: finished qsub' | mail -s 'Hoth: finished qsub' mkl48@nau.edu
 ###Note: sleep can be used to delay submissions
 
 echo "starting case number $case"
