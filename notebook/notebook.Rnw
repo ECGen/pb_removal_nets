@@ -30,6 +30,53 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{10 Mar 2014}
+
+<<>>=
+source('../src/pbr_load_data.R')
+any(colnames(pbr.08[[1]])=='pb')
+#mantel?
+cn08 <- lapply(pbr.08,CoNetwork)
+d.08c=vegdist(t(pbr.08$c[,apply(pbr.08$c,2,sum)!=0]))
+
+###assess the percoloation threshold, i.e. the point at which the graph is split into more than one cluster
+m08c <- as.matrix(d.08c)
+x <- m08c
+m <- x
+step.size <- 0.0001
+step <- 0
+n.c <- no.clusters(graph.adjacency(m,weighted=TRUE)) #number of clusters
+if (n.c < 1){print('Oh no! No clusters!')}else{
+  while (n.c==1){
+    step <- step + 1
+    print(paste((step.size*step),n.c,sep=' '))
+    m[m<(step.size*step)] <- 0
+    n.c <- no.clusters(graph.adjacency(m,weighted=TRUE))
+  }
+}
+threshold <- (step.size*(step-1))
+m <- x
+m[x<threshold] <- 0
+out <- list(prec.mat=m,threshold=)
+}
+                                        #mantels
+d08c <- vegdist(t(pbr.08$c[,-1]))
+d08x <- vegdist(t(pbr.08$x[,-1]))
+d08c[is.na(d08c)] <- 0
+d08x[is.na(d08x)] <- 0
+                                        #
+d09c <- vegdist(t(pbr.09$c[,-1]))
+d09x <- vegdist(t(pbr.09$x[,-1]))
+d09c[is.na(d09c)] <- 0
+d09x[is.na(d09x)] <- 0
+                                        #
+mantel(d08x~d08c)
+mantel(d09x~d09c)
+
+
+
+@ 
+
 \section{7 Mar 2014}
 
 <<>>=
@@ -127,25 +174,41 @@ par(op)
 length(n08..[[1]][n08..[[1]]!=0]);length(n08..[[2]][n08..[[2]]!=0])
 length(n09..[[1]][n09..[[1]]!=0]);length(n09..[[2]][n09..[[2]]!=0])
                                         #modularity
-detach(package:ComGenR);detach(package:igraph)
-mod08 <- lapply(n08..,function(x) computeModules(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],steps=100000))
-cen08 <- lapply(n08..,function(x) centralization(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],'degree'))
-mod09 <- lapply(n09..,function(x) computeModules(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],steps=100000))
-cen09 <- lapply(n09..,function(x) centralization(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],'degree'))
-library(ComGenR)
+## detach(package:ComGenR);detach(package:igraph)
+## mod08 <- lapply(n08..,function(x) computeModules(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],steps=100000))
+## cen08 <- lapply(n08..,function(x) centralization(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],'degree'))
+## mod09 <- lapply(n09..,function(x) computeModules(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],steps=100000))
+## cen09 <- lapply(n09..,function(x) centralization(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],'degree'))
+## library(ComGenR)
                                         #
 mod08 <- c(c=0.389325,x=0.456388)
 cen08 <- c(c=0.2002138,x=0.2489177)
 mod09 <- c(c=0.454255,x=0.604196)
 cen09 <- c(c=0.1893781,x=0.1666667)
                                         #qap
-net.dif <- function(dat,dat2=NULL,g1=NULL,g2=NULL){sum((dat[,,g1]-dat[,,g2])^2)}
-qin08 <- array(0,dim=c(nrow(n08..[[1]]),nrow(n08..[[1]]),2))
-qin08[,,1] <- n08..[[1]];qin08[,,2] <- n08..[[2]]
-q08 <- qaptest(qin08,net.dif,g1=1,g2=2)
-qin09 <- array(0,dim=c(nrow(n09..[[1]]),nrow(n09..[[1]]),2))
-qin09[,,1] <- n09..[[1]];qin09[,,2] <- n09..[[2]]
-q09 <- qaptest(qin09,net.dif,g1=1,g2=2)
+## net.dif <- function(dat,dat2=NULL,g1=NULL,g2=NULL){sum((dat[,,g1]-dat[,,g2])^2)}
+## qin08 <- array(0,dim=c(nrow(n08..[[1]]),nrow(n08..[[1]]),2))
+## qin08[,,1] <- n08..[[1]];qin08[,,2] <- n08..[[2]]
+## q08 <- qaptest(qin08,net.dif,g1=1,g2=2)
+## qin09 <- array(0,dim=c(nrow(n09..[[1]]),nrow(n09..[[1]]),2))
+## qin09[,,1] <- n09..[[1]];qin09[,,2] <- n09..[[2]]
+## q09 <- qaptest(qin09,net.dif,g1=1,g2=2)
+
+##testval, dist1000, pval1, pval2
+q08 <- read.csv('../results/q08.csv')
+q09 <- read.csv('../results/q09.csv')
+hist(q08[c(-1,(-(nrow(q08)-1)),-nrow(q08)),],xlim=c(0,q08[1,1]+100))
+abline(v=q08[1,1])
+hist(q09[c(-1,(-(nrow(q09)-1)),-nrow(q09)),],xlim=c(0,q09[1,1]+100))
+abline(v=q09[1,1])
+                                        #modularity test
+burn.c <- n08..[[1]][apply(n08..[[1]],1,sum)!=0,apply(n08..[[1]],2,sum)!=0]
+for (i in 1:100){burn.c <- commsimulator(burn.c,method='r1')}
+null08c <- list()
+for (i in 1:100){null08c[[i]] <- commsimulator(burn.c,method='r1')}
+modt08c <- lapply(null08c,function(x) computeModules(x,steps=100000))
+unlist(lapply(modt08c,function(x) slot(x,'likelihood')))
+mod08 <- c(c=0.389325,x=0.456388)
 
 @ 
 

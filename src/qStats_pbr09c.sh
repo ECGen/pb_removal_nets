@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+#$ -N coms
+#$ -pe mpi 1
+#$ -M mkl48@nau.edu
+#$ -m as
+#Wall time:
+#$ -l h_rt=0:10:00
+
+###Submission loop:
+###for case in $ql; do qsub -o ~/qmonitor -e ~/qmonitor -cwd -v case=$case $cgssrc/qStats_coms.sh; sleep 1; done
+###Note: sleep can be used to delay submissions
+
+cp /home/mlau/projects/cg_simulations/src/cgsMods.R ./
+cp /home/mlau/projects/cg_simulations/src/cgsNest.R ./
+echo "starting case number $case"
+Rscript cgsMods.R null.csv ~/projects/pb_removal_nets/results/null_mods09c.txt
+Rscript cgsNest.R null.csv ~/projects/pb_removal_nets/results/null_nest09c.txt
+echo "completed case number $case"
+rm ./cgsMods.R
+rm ./cgsNest.R
+
