@@ -1,6 +1,7 @@
 ##mkNull09.R = making a set of null communities using the 2009 pbr control trees
 
 #data input
+library(vegan)
 source('../src/pbr_load_data_hoth.R')
 dir.create('../data/null09c')
 com <- pbr.09$c
