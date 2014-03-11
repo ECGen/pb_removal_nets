@@ -1,7 +1,0 @@
-
-QAP Test Results
-
-Estimated p-values:
-	p(f(perm) >= f(d)): 0 
-	p(f(perm) <= f(d)): 1 
-
