@@ -14,8 +14,9 @@ echo "starting case number $case"
 cd $case
 cp /home/mlau/projects/cg_simulations/src/cgsMods.R ./
 cp /home/mlau/projects/cg_simulations/src/cgsNest.R ./
-Rscript cgsMods.R null.csv ~/projects/pb_removal_nets/results/null_mods09c.txt
-Rscript cgsNest.R null.csv ~/projects/pb_removal_nets/results/null_nest09c.txt
+input=$(ls)
+Rscript cgsMods.R $input ~/projects/pb_removal_nets/results/null_mods09c.txt
+Rscript cgsNest.R $input ~/projects/pb_removal_nets/results/null_nest09c.txt
 rm ./cgsMods.R
 rm ./cgsNest.R
 echo "completed case number $case"
