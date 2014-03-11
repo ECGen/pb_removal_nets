@@ -16,8 +16,8 @@ cp /home/mlau/projects/cg_simulations/src/cgsMods.R ./
 cp /home/mlau/projects/cg_simulations/src/cgsNest.R ./
 input=$(ls)
 echo $input
-#Rscript cgsMods.R $input ~/projects/pb_removal_nets/results/null_mods09c.txt
-#Rscript cgsNest.R $input ~/projects/pb_removal_nets/results/null_nest09c.txt
+Rscript cgsMods.R $input ~/projects/pb_removal_nets/results/null_mods09c.txt
+Rscript cgsNest.R $input ~/projects/pb_removal_nets/results/null_nest09c.txt
 rm ./cgsMods.R
 rm ./cgsNest.R
 echo "completed case number $case"
