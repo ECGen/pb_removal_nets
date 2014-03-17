@@ -30,7 +30,30 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{16 Mar 2014}
+Target Plot
+
+<<>>=
+
+source('../src/pbr_load_data.R')
+detach(package:ComGenR);detach(package:igraph)
+library(sna)
+                                        #
+x <- (pbr.09$c[,apply(pbr.09$c,2,sum)!=0])
+x <- x[,order(apply(x,2,sum),decreasing=TRUE)][,1:10]
+x <- x[1:10,1:5]
+x.el <- as.edgelist.sna(x,force.bipartite=TRUE)
+cen <- degree(x,'freeman',gmode='graph',rescale=TRUE)
+btw <- betweenness(x)
+x.col <- c(rep('green',nrow(x)),rep('red',ncol(x)))
+gplot(x,vertex.col=x.col,displaylabels=TRUE)
+gplot.target(x,x=cen)
+gplot.target(x.el,x=cen,col=x.col,circ.col)
+
+@ 
+
 \section{10 Mar 2014}
+
 
 <<>>=
 source('../src/pbr_load_data.R')

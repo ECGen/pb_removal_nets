@@ -30,6 +30,53 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{10 Mar 2014}
+
+<<>>=
+source('../src/pbr_load_data.R')
+any(colnames(pbr.08[[1]])=='pb')
+#mantel?
+cn08 <- lapply(pbr.08,CoNetwork)
+d.08c=vegdist(t(pbr.08$c[,apply(pbr.08$c,2,sum)!=0]))
+
+###assess the percoloation threshold, i.e. the point at which the graph is split into more than one cluster
+m08c <- as.matrix(d.08c)
+x <- m08c
+m <- x
+step.size <- 0.0001
+step <- 0
+n.c <- no.clusters(graph.adjacency(m,weighted=TRUE)) #number of clusters
+if (n.c < 1){print('Oh no! No clusters!')}else{
+  while (n.c==1){
+    step <- step + 1
+    print(paste((step.size*step),n.c,sep=' '))
+    m[m<(step.size*step)] <- 0
+    n.c <- no.clusters(graph.adjacency(m,weighted=TRUE))
+  }
+}
+threshold <- (step.size*(step-1))
+m <- x
+m[x<threshold] <- 0
+out <- list(prec.mat=m,threshold=)
+}
+                                        #mantels
+d08c <- vegdist(t(pbr.08$c[,-1]))
+d08x <- vegdist(t(pbr.08$x[,-1]))
+d08c[is.na(d08c)] <- 0
+d08x[is.na(d08x)] <- 0
+                                        #
+d09c <- vegdist(t(pbr.09$c[,-1]))
+d09x <- vegdist(t(pbr.09$x[,-1]))
+d09c[is.na(d09c)] <- 0
+d09x[is.na(d09x)] <- 0
+                                        #
+mantel(d08x~d08c)
+mantel(d09x~d09c)
+
+
+
+@ 
+
 \section{7 Mar 2014}
 
 <<>>=
