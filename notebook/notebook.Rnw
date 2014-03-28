@@ -30,6 +30,63 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{27 Mar 2014}
+
+<<>>=
+source('../src/pbr_load_data.R')
+library(bipartite)
+mm <- function(x){slot(computeModules(x),'likelihood')}
+                                        #
+n08c <- apply(pbr.08$c[,apply(sign(pbr.08$c),2,sum)>3],2,function(x) x/max(x))
+n08x <- apply(pbr.08$x[,apply(sign(pbr.08$x),2,sum)>3],2,function(x) x/max(x))
+n09c <- apply(pbr.09$c[,apply(sign(pbr.09$c),2,sum)>3],2,function(x) x/max(x))
+n09x <- apply(pbr.09$x[,apply(sign(pbr.09$x),2,sum)>3],2,function(x) x/max(x))
+                                        #
+om08c <- computeModules(n08c)
+om08c. <- computeModules(n08c[,-1])
+om08x <- computeModules(n08x)
+om08x. <- computeModules(n08x[,-1])
+om09c <- computeModules(n09c)
+om09c. <- computeModules(n09c[,-1])
+om09x <- computeModules(n09x)
+om09x. <- computeModules(n09x[,-1])
+omAll <- list(om08c,om08c.,om08x,om08x.,om09c,om09c.,om09x,om09x.)
+print('Done!')
+                                        #null stats
+## nm08c <- oecosimu(n08c,mm,method='r1',nsimul=25)
+## nm08c. <- oecosimu(n08c[,-1],mm,method='r1',nsimul=25)
+## nm08x <- oecosimu(n08x,mm,method='r1',nsimul=25)
+## nm08x. <- oecosimu(n08x[,-1],mm,method='r1',nsimul=25)
+## nm09c <- oecosimu(n09c,mm,method='r1',nsimul=25)
+## nm09c. <- oecosimu(n09c[,-1],mm,method='r1',nsimul=25)
+## nm09x <- oecosimu(n09x,mm,method='r1',nsimul=25)
+## nm09x. <- oecosimu(n09x[,-1],mm,method='r1',nsimul=25)
+## nmAll <- list(nm08c,nm08c.,nm08x,nm08x.,nm09c,nm09c.,nm09x,nm09x.)
+## save(nmAll,file='../data/nmAll.rda')
+load('../data/nmAll.rda')
+                                        #Is the exclusion similar to the control with pb removed?
+modularity <- c(om08c=slot(om08c,'likelihood'),om08c.=slot(om08c.,'likelihood'),om08x=slot(om08x,'likelihood'),om08x.=slot(om08x.,'likelihood'),om09c=slot(om09c,'likelihood'),om09c.=slot(om09c.,'likelihood'),om09x=slot(om09x,'likelihood'),om09x.=slot(om09x.,'likelihood'))
+                                        #
+source('/Users/Aeolus/projects/dissertation/projects/lcn/src/getMods.R')
+mu.08c <- apply(pbr.08$c[,apply(pbr.08$c,2,sum)>3],2,function(x,y) tapply(x,y,mean),y=geno.08$c)
+bpn08c <- mu.08c[order(apply(mu.08c,1,sum),decreasing=TRUE),order(apply(mu.08c,2,sum),decreasing=TRUE)]
+mods.08c. <- getMods(om08c.)
+greyscale <- tapply(mods.08c.[[1]],geno.08$c,mean)
+greyscale <- (greyscale-min(greyscale))/max(greyscale-min(greyscale))
+gs.low <- greyscale[match(rownames(bpn08c),names(greyscale))]
+greyscale <- mods.08c.[[2]]
+greyscale <- (greyscale-min(greyscale))/max(greyscale-min(greyscale))
+gs.high <- greyscale[match(colnames(bpn08c),names(greyscale))]
+names(gs.high)[is.na(gs.high)] <- colnames(bpn08c)[is.na(gs.high)]
+gs.high[is.na(gs.high)] <- 1
+colnames(bpn08c) <- 1:ncol(bpn08c)
+plotweb(bpn08c,method='normal',col.low=grey(greyscale),col.high=grey(gs.high),bor.col.high=1,text.rot=90,labsize=1.5)
+                                        #Significance of modules controls versus exclusion?
+
+
+
+@ 
+
 \section{16 Mar 2014}
 Target Plot
 
