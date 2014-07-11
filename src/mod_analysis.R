@@ -3,7 +3,7 @@
 
 source('../src/pbr_load_data.R')
 source('../src/pbr_funcs.R')
-library(bipartite)
+
 ###Manage data
 g08 <- geno.08[[1]]
 g09 <- geno.09[[1]]

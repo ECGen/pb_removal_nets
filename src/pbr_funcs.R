@@ -1,3 +1,6 @@
+library(bipartite)
+library(methods)
+
 ###my module function
 mm <- function(x){slot(computeModules(x),'likelihood')}
 ###sort network by degree
