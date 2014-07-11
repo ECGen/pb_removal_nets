@@ -30,6 +30,80 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{11 Jul 2014}
+
+Maybe you could do two of this most recent version, one with the
+treatment on all the trees and one with the control on all of the trees?
+
+<<>>=
+  source('../src/pbr_load_data.R')
+library(bipartite)
+mm <- function(x){slot(computeModules(x),'likelihood')}
+snort <- function(x){x[order(apply(x,1,sum),decreasing=TRUE),order(apply(x,2,sum),decreasing=TRUE)]}
+munet <- function(x,t){apply(x,2,function(x,t) tapply(x,t,mean),t=t)}
+sigMods <- function(x,n=500){
+  obs <- slot(computeModules(sign(x)),name='likelihood')
+  sim <- list()
+  for (i in 1:n){
+    sim[[i]] <- commsimulator(sign(x),thin=50,method='r1')
+  }
+  sim <- unlist(lapply(sim,function(x) slot(computeModules(sign(x)),name='likelihood')))
+  out <- c(obs=obs,mu.sim=mean(sim),sd.sim=sd(sim),
+           z=((obs-mean(sim))/sd(sim)),
+           p=((length(sim)[sim<=obs])/n)
+           )
+  return(out)
+}
+cMods <- function(x,n=100,thin=50,method='r1'){
+  out <- 0
+  obs <- slot(computeModules(x),name='likelihood')
+  for (i in 1:nrow(x)){
+    sim <- 0
+    for (nit in 1:n){
+      y <- x
+      y[i,] <- commsimulator(x,method=method,thin=thin)[i,]
+      sim[nit] <- slot(computeModules(y),name='likelihood')
+    }
+    out[i] <- (obs - mean(sim))/sd(sim)
+  }
+  return(out)
+}
+                                     #
+g08 <- geno.08[[1]]
+g09 <- geno.09[[1]]
+n08c <- apply(pbr.08$c[,apply(sign(pbr.08$c),2,sum)>3],2,function(x) x/max(x))
+n08x <- apply(pbr.08$x[,apply(sign(pbr.08$x),2,sum)>3],2,function(x) x/max(x))
+n09c <- apply(pbr.09$c[,apply(sign(pbr.09$c),2,sum)>3],2,function(x) x/max(x))
+n09x <- apply(pbr.09$x[,apply(sign(pbr.09$x),2,sum)>3],2,function(x) x/max(x))
+###
+cm.08c <- computeModules(n08c)
+cm.08cx <- computeModules(n08c[,-1])
+cm.08x <- computeModules(n08x)
+cm.08xx <- computeModules(n08x[,-1])
+cm.09c <- computeModules(n09c)
+cm.09cx <- computeModules(n09c[,-1])
+cm.09x <- computeModules(n09x)
+cm.09xx <- computeModules(n09x[,-1])
+mods08 <- c(slot(cm.08c,name='likelihood'),slot(cm.08cx,name='likelihood'),slot(cm.08x,name='likelihood'),slot(cm.08xx,name='likelihood'))
+mods09 <- c(slot(cm.09c,name='likelihood'),slot(cm.09cx,name='likelihood'),slot(cm.09x,name='likelihood'),slot(cm.09xx,name='likelihood'))
+###
+plot(mods08,type='l',ylim=range(c(mods08,mods09)));lines(mods09,lty=2)
+legend('topleft',legend=2008:2009,lty=1:2)
+###test module significance
+sm09c <- sigMods(n09c);sm09x <- sigMods(n09x)
+###test contribution to modularity
+cm09c <- cMods(n09c,n=50);cm09x <- cMods(n09x,n=50)
+###
+nest08 <- list(nestedness(n08c),nestedness(n08x))
+nest09 <- list(nestedness(n09c),nestedness(n09x))
+names(nest08) <- names(nest09) <- c('c','x')
+###
+cbind(c=unlist(nest08[[1]][c(8,11:18)]),x=unlist(nest08[[2]][c(8,11:18)]))
+cbind(c=unlist(nest09[[1]][c(8,11:18)]),x=unlist(nest09[[2]][c(8,11:18)]))
+###
+
+@ 
+
 \section{27 Mar 2014}
 
 <<>>=
