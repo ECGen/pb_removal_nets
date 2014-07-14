@@ -30,6 +30,31 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{14 Jul 2014}
+
+<<>>=
+  source('../src/pbr_load_data.R')
+library(bipartite)
+g08 <- geno.08[[1]]
+g09 <- geno.09[[1]]
+n08c <- apply(pbr.08$c[,apply(sign(pbr.08$c),2,sum)>3],2,function(x) x/max(x))
+n08x <- apply(pbr.08$x[,apply(sign(pbr.08$x),2,sum)>3],2,function(x) x/max(x))
+n09c <- apply(pbr.09$c[,apply(sign(pbr.09$c),2,sum)>3],2,function(x) x/max(x))
+n09x <- apply(pbr.09$x[,apply(sign(pbr.09$x),2,sum)>3],2,function(x) x/max(x))
+
+###
+mods <- dget('../results/sigMods09.rda')
+mods[[1]][1:5]
+mods[[2]][1:5]
+cm <- dget('../results/cMods09.rda')
+hist(cm[[1]])
+hist(cm[[2]])
+names(cm[[2]]) <- rownames(n09c)
+barplot(sort(cm[[2]]),las=2)
+summary(aov(cm[[2]]~g09))
+
+@ 
+
 \section{11 Jul 2014}
 
 Maybe you could do two of this most recent version, one with the
