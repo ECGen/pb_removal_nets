@@ -30,7 +30,154 @@ community network structure and stability}
 \begin{itemize}
 \end{itemize}
 
+\section{29 Jul 2014}
+Re-run modularity for 2008 and 2009 control and exclusion with and
+without pb.
+
+And, calculate contribution to modularity.
+
+<<>>=
+
+
+@ 
+
+\section{16 Jul 2014}
+
+Correlation between contribution to nestedness and affect of PB removal.
+
+<<>>=
+  ##get pb effect
+  source('../src/pbr_load_data.R')
+g09 <- geno.09[[1]]
+pbe09 <- (pbr.09$c[,1] - pbr.09$x[,1])
+cm <- dget('../results/cMods09.rda')[[1]]
+hist(pbe09)
+summary(aov(pbe09~g09))
+plot(cm~pbe09,pch=19,ylab='z (Contribution to Modularity)',xlab='PB Removal Effect')
+abline(lm(cm~pbe09))
+cor.test(cm,pbe09)
+cor.test(cm,I(pbe09/max(pbe09)))
+plot(cm~I(pbe09/max(pbe09)))
+
+@ 
+
+\section{15 Jul 2014}
+
+Abstract:
+\begin{itemize}
+\item 
+\end{itemize}
+
+Intro:
+\begin{itemize}
+\item 
+\end{itemize}
+
+Methods:
+\begin{itemize}
+\item Only 2009
+\item 
+\end{itemize}
+
+Results:
+\begin{itemize}
+\item Modularity: Control = 0.17ns, Excluded = 0.20 p<0.001
+\item PB Contribution: control z = -0.6467276, p = 0.20, exclusion z =
+  -0.1391631, p = 0.48
+\item Correlation between removal effect and contribution to
+  modularity = 2.1677, df = 38, p-value = 0.03651
+\end{itemize}
+
+Discussion:
+\begin{itemize}
+\item Genetically based interaction between foundation species
+  contributes to network modularity.
+\item The presence of P. betae decreases modularity.
+\item Modularity may be influenced by genotype.
+\end{itemize}
+
+%%%%%%%%%%%%%%%
+PBR Figures
+%%%%%%%%%
+
+<<>>=
+  library(bipartite)
+source('../src/pbr_funcs.R')
+source('../src/pbr_load_data.R')
+source('../src/getMods.R')
+g09 <- geno.09[[1]]
+n09c <- apply(pbr.09$c[,apply(sign(pbr.09$c),2,sum)>3],2,function(x) x/max(x))
+n09x <- apply(pbr.09$x[,apply(sign(pbr.09$x),2,sum)>3],2,function(x) x/max(x))
+rownames(n09c) <- rownames(n09x) <- g09
+
+###Get modules
+mod09c <- computeModules(n09c)
+mod09x <- computeModules(n09x)
+mem09c <- getMods(mod09c)
+mem09x <- getMods(mod09x)
+
+###
+
+par(mfrow=c(1,2))
+my.col <- topo.colors(6)
+my.col[6] <- 'white'
+colcl <- mem09c[[1]][order(mem09c[[1]])];colch <- mem09c[[2]][order(mem09c[[2]])]
+colcl <- my.col[colcl];colch <- my.col[colch]
+plotweb(n09c[order(mem09c[[1]]),order(mem09c[[2]])],text.rot=90,col.low=colcl,col.high=colch,method='normal',col.interaction='black',bor.col.interaction='black')
+colxl <- mem09x[[1]][order(mem09x[[1]])];colxh <- mem09x[[2]][order(mem09x[[2]])]
+colxl <- my.col[colxl];colxh <- my.col[colxh]
+plotweb(n09x[order(mem09x[[1]]),order(mem09x[[2]])],text.rot=90,col.low=colxl,col.high=colxh,method='normal',col.interaction='black',bor.col.interaction='black')
+
+
+@ 
+
+
 \section{14 Jul 2014}
+
+
+P. betae contribution to modularity:
+
+<<>>=
+  source('../src/pbr_funcs.R')
+  source('../src/pbr_load_data.R')
+n09c <- apply(pbr.09$c[,apply(sign(pbr.09$c),2,sum)>3],2,function(x) x/max(x))
+n09x <- apply(pbr.09$x[,apply(sign(pbr.09$x),2,sum)>3],2,function(x) x/max(x))
+
+x <- sign(n09c)
+out <- 0
+obs <- slot(computeModules(x),name='likelihood')
+sim <- 0
+n <- 100
+thin <- 50
+method <- 'r1'
+y <- x
+j <- (1:ncol(x))[colnames(x)=='pb']
+for (nit in 1:n){
+  print(nit)
+  y[,j] <- commsimulator(x,method=method,thin=thin)[,j]
+  sim[nit] <- slot(computeModules(y),name='likelihood')
+}
+
+###control
+sim.c <- dget(file='../data/pb_cmod_control.rda')
+obs.c <- dget(file='../data/pb_mumods_control.rda')
+## obs.c <- 0
+## for (i in 1:100){obs.c[i] <- slot(computeModules(sign(n09c)),name='likelihood')}
+(mean(obs.c) - mean(sim.c))/sd(sim.c)
+length(sim.c[sim.c<=mean(obs.c)])/length(sim.c)
+##z = -0.6467276, p = 0.20
+
+###exclusion
+sim.x <- dget(file='../data/pb_cmod.rda')
+obs.x <- dget(file='../data/pb_mumods_exclusion.rda')
+## obs.x <- 0
+## for (i in 1:100){obs.x[i] <- slot(computeModules(sign(n09x)),name='likelihood')}
+## dput(obs.x,file='../data/pb_mumods_exclusion.rda')
+(mean(obs.x) - mean(sim.x))/sd(sim.x)
+length(sim.x[sim.x<=obs.x])/length(sim.x)
+##z = -0.1391631, p = 0.48
+
+@ 
 
 <<>>=
   source('../src/pbr_load_data.R')
@@ -49,9 +196,12 @@ mods[[2]][1:5]
 cm <- dget('../results/cMods09.rda')
 hist(cm[[1]])
 hist(cm[[2]])
-names(cm[[2]]) <- rownames(n09c)
+names(cm[[1]]) <- names(cm[[2]]) <- rownames(n09c)
+plot(cm[[1]]~g09)
+plot(cm[[2]]~g09)
+plot(sqrt(I(cm[[2]]+abs(min(cm[[2]]))))~g09)
+barplot(sort(cm[[1]]),las=2)
 barplot(sort(cm[[2]]),las=2)
-summary(aov(cm[[2]]~g09))
 
 @ 
 
@@ -63,36 +213,6 @@ treatment on all the trees and one with the control on all of the trees?
 <<>>=
   source('../src/pbr_load_data.R')
 library(bipartite)
-mm <- function(x){slot(computeModules(x),'likelihood')}
-snort <- function(x){x[order(apply(x,1,sum),decreasing=TRUE),order(apply(x,2,sum),decreasing=TRUE)]}
-munet <- function(x,t){apply(x,2,function(x,t) tapply(x,t,mean),t=t)}
-sigMods <- function(x,n=500){
-  obs <- slot(computeModules(sign(x)),name='likelihood')
-  sim <- list()
-  for (i in 1:n){
-    sim[[i]] <- commsimulator(sign(x),thin=50,method='r1')
-  }
-  sim <- unlist(lapply(sim,function(x) slot(computeModules(sign(x)),name='likelihood')))
-  out <- c(obs=obs,mu.sim=mean(sim),sd.sim=sd(sim),
-           z=((obs-mean(sim))/sd(sim)),
-           p=((length(sim)[sim<=obs])/n)
-           )
-  return(out)
-}
-cMods <- function(x,n=100,thin=50,method='r1'){
-  out <- 0
-  obs <- slot(computeModules(x),name='likelihood')
-  for (i in 1:nrow(x)){
-    sim <- 0
-    for (nit in 1:n){
-      y <- x
-      y[i,] <- commsimulator(x,method=method,thin=thin)[i,]
-      sim[nit] <- slot(computeModules(y),name='likelihood')
-    }
-    out[i] <- (obs - mean(sim))/sd(sim)
-  }
-  return(out)
-}
                                      #
 g08 <- geno.08[[1]]
 g09 <- geno.09[[1]]
