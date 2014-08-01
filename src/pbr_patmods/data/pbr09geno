@@ -1,0 +1,10 @@
+structure(list(c = structure(c(5L, 5L, 5L, 5L, 1L, 1L, 1L, 1L, 
+2L, 2L, 2L, 2L, 3L, 3L, 3L, 3L, 4L, 4L, 4L, 4L, 6L, 6L, 6L, 6L, 
+7L, 7L, 7L, 7L, 8L, 8L, 8L, 8L, 9L, 9L, 9L, 9L, 10L, 10L, 10L, 
+10L), .Label = c("1000", "1008", "1017", "1020", "996", "coal 3", 
+"HE-10", "Rm-2", "T-15", "WC-5"), class = "factor"), x = structure(c(5L, 
+5L, 5L, 5L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 3L, 3L, 3L, 3L, 4L, 
+4L, 4L, 4L, 6L, 6L, 6L, 6L, 7L, 7L, 7L, 7L, 8L, 8L, 8L, 8L, 9L, 
+9L, 9L, 9L, 10L, 10L, 10L, 10L), .Label = c("1000", "1008", "1017", 
+"1020", "996", "coal 3", "HE-10", "Rm-2", "T-15", "WC-5"), class = "factor")), .Names = c("c", 
+"x"))
