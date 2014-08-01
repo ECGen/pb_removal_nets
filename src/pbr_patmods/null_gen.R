@@ -1,5 +1,5 @@
 ###Null community generator for pbr mods
-nits <- 100
+nits <- 1000
 n08c <- dget('./data/pbr08c.rdata')
 n08x <- dget('./data/pbr08x.rdata')
 n09c <- dget('./data/pbr09c.rdata')
