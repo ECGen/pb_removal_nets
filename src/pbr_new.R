@@ -1,0 +1,85 @@
+source('../src/pbr_load_data_hoth.R')
+library(sna)
+library(bipartite)
+                                        #Sourcing ComGenR on hoth
+oldwd <- getwd()
+setwd('../../packages/ComGenR/R/')
+cgn.list <- (sapply(dir(),grepl,pattern='~')|sapply(dir(),grepl,pattern='\\#'))==FALSE
+sapply(dir()[cgn.list],source)
+setwd(oldwd)
+
+matchNets <- function(x,y){
+  nx <- rownames(x) #names in x
+  ny <- rownames(y) #names in y
+  mny <- nx[nx%in%ny==FALSE] #x missing from y
+  mnx <- ny[ny%in%nx==FALSE] #y missing from x
+  nxy <- nx[nx%in%ny] #x matching y
+                                        #matching x
+  x. <- cbind(x,matrix(0,nrow=nrow(x),ncol=length(mnx)))
+  x. <- rbind(x.,matrix(0,nrow=length(mnx),ncol=ncol(x.)))
+                                        #matching y
+  y. <- cbind(y,matrix(0,nrow=nrow(y),ncol=length(mny)))
+  y. <- rbind(y.,matrix(0,nrow=length(mny),ncol=ncol(y.)))
+                                        #
+  if (all(dim(x.)==dim(y.))){return(list(x.,y.))}else{warning('Unknown error.')}
+}
+                                        #2008
+con08 <- lapply(pbr.08,CoNetwork)
+bin08 <- lapply(pbr.08,as.matrix)
+for (i in 1:length(bin08)){bin08[[i]][bin08[[i]]!=0] <- 1}
+n08 <- lapply(bin08,function(x) t(x)%*%x)
+n08. <- lapply(bin08,function(x) t(x)%*%x)
+length(n08[[1]][n08[[1]]!=n08.[[1]]]);length(n08[[2]][n08[[2]]!=n08.[[2]]])
+for (i in 1:length(n08)){n08[[i]][con08[[i]]==0] <- 0}
+length(n08[[1]][n08[[1]]!=n08.[[1]]]);length(n08[[2]][n08[[2]]!=n08.[[2]]])
+
+pbn08 <- lapply(n08.,function(x) x[x[,1]!=0,x[,1]!=0])
+for (i in 1:length(pbn08)){pbn08[[i]][2:nrow(pbn08[[i]]),2:ncol(pbn08[[i]])] <- 0}
+
+                                        #CoNetwork for just those species with PB co-occurrences
+n08.. <- n08
+for (i in 1:length(n08..)){n08..[[i]] <- n08..[[i]][colnames(n08[[i]])%in%colnames(pbn08[[i]]),colnames(n08[[i]])%in%colnames(pbn08[[i]])]}
+n08.. <- matchNets(n08..[[1]],n08..[[2]])
+names(n08..) <- names(n08)
+                                        #2009
+con09 <- lapply(pbr.09,CoNetwork)
+bin09 <- lapply(pbr.09,as.matrix)
+for (i in 1:length(bin09)){bin09[[i]][bin09[[i]]!=0] <- 1}
+n09 <- lapply(bin09,function(x) t(x)%*%x)
+n09. <- lapply(bin09,function(x) t(x)%*%x)
+length(n09[[1]][n09[[1]]!=n09.[[1]]]);length(n09[[2]][n09[[2]]!=n09.[[2]]])
+for (i in 1:length(n09)){n09[[i]][con09[[i]]==0] <- 0}
+length(n09[[1]][n09[[1]]!=n09.[[1]]]);length(n09[[2]][n09[[2]]!=n09.[[2]]])
+
+pbn09 <- lapply(n09.,function(x) x[x[,1]!=0,x[,1]!=0])
+for (i in 1:length(pbn09)){pbn09[[i]][2:nrow(pbn09[[i]]),2:ncol(pbn09[[i]])] <- 0}
+
+                                        #CoNetwork for just those species with PB co-occurrences
+n09.. <- n09
+for (i in 1:length(n09..)){n09..[[i]] <- n09..[[i]][colnames(n09[[i]])%in%colnames(pbn09[[i]]),colnames(n09[[i]])%in%colnames(pbn09[[i]])]}
+n09.. <- matchNets(n09..[[1]],n09..[[2]])
+names(n09..) <- names(n09)
+
+
+#2008+2009
+                                        #
+length(n08..[[1]][n08..[[1]]!=0]);length(n08..[[2]][n08..[[2]]!=0])
+length(n09..[[1]][n09..[[1]]!=0]);length(n09..[[2]][n09..[[2]]!=0])
+                                        #modularity
+# mod08 <- lapply(n08..,function(x) computeModules(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],steps=100000))
+# cen08 <- lapply(n08..,function(x) centralization(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],'degree'))
+# mod09 <- lapply(n09..,function(x) computeModules(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],steps=100000))
+# cen09 <- lapply(n09..,function(x) centralization(x[apply(x,1,sum)!=0,apply(x,2,sum)!=0],'degree'))
+                                        #
+mod08 <- c(c=0.389325,x=0.456388)
+cen08 <- c(c=0.2002138,x=0.2489177)
+mod09 <- c(c=0.454255,x=0.604196)
+cen09 <- c(c=0.1893781,x=0.1666667)
+                                        #qap
+net.dif <- function(dat,dat2=NULL,g1=NULL,g2=NULL){sum((dat[,,g1]-dat[,,g2])^2)}
+qin08 <- array(0,dim=c(nrow(n08..[[1]]),nrow(n08..[[1]]),2))
+qin08[,,1] <- n08..[[1]];qin08[,,2] <- n08..[[2]]
+q08 <- qaptest(qin08,net.dif,g1=1,g2=2)
+qin09 <- array(0,dim=c(nrow(n09..[[1]]),nrow(n09..[[1]]),2))
+qin09[,,1] <- n09..[[1]];qin09[,,2] <- n09..[[2]]
+q09 <- qaptest(qin09,net.dif,g1=1,g2=2)
