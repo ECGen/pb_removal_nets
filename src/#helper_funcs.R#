@@ -1,6 +1,6 @@
 ###cross hair plots
 
-
+rel <- function(x){apply(x,2,function(x) x/max(x))}
 
 ch.plot <- function(x,g,cex=1,buffer=0.1,plot.legend=TRUE,loc='topleft'){
   mu <- apply(x,2,function(x,g) tapply(x,g,mean),g=g)

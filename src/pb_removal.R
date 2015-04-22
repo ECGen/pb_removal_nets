@@ -1,9 +1,11 @@
 ###Analysis of Art's Pemphigus removal data
 ###Current file started 18 Oct 2013
+options(menu.graphics=FALSE)
 
 ###Import data
 add.pb <- TRUE
-rm.resistant <- TRUE
+rm.resistant <- FALSE
+binary <- FALSE
 pbr.08 <- read.csv('../data/keith_pb_removal_2008.csv')
 pbr.09 <- read.csv('../data/keith_pb_removal_2009.csv')
 pbr.08[,2] <- as.character(pbr.08[,2])
@@ -34,8 +36,8 @@ trt.09 <- as.character(sapply(as.character(pbr.09[,2]),function(x) strsplit(x,sp
 pbr.08 <- pbr.08[,-1:-2]
 pbr.09 <- pbr.09[,-1:-2]
                                         #remove species occurring less than 5 times
-pbr.08 <- pbr.08[,apply(pbr.08,2,sum)>=5]
-pbr.09 <- pbr.09[,apply(pbr.09,2,sum)>=5]
+pbr.08 <- pbr.08[,apply(pbr.08,2,sum)>=10]
+pbr.09 <- pbr.09[,apply(pbr.09,2,sum)>=10]
                                         #separate by treatment
 pbr.08 <- split(pbr.08,trt.08)
 pbr.09 <- split(pbr.09,trt.09)
@@ -43,8 +45,8 @@ geno.08 <- split(geno.08,trt.08)
 geno.09 <- split(geno.09,trt.09)
                                         #add pb?
 if (add.pb){
-  library(xlsx)
-  pb08 <- as.matrix(read.xlsx('../data/P betae excl treatment effect 2008.xlsx',sheetIndex=1))
+  library(gdata)
+  pb08 <- as.matrix(read.xls('../data/P betae excl treatment effect 2008.xlsx',sheet=1))
   colnames(pb08) <- as.character(pb08[1,])
   pb08 <- pb08[-1,]
   pb08 <- data.frame(genotype=pb08[,1],tree=pb08[,2],x=as.numeric(pb08[,3]),c=as.numeric(pb08[,4]))
@@ -60,7 +62,7 @@ if (add.pb){
   pbr.08[[1]] <- cbind(pb=pb[[1]],pbr.08[[1]])
   pbr.08[[2]] <- cbind(pb=pb[[2]],pbr.08[[2]])
                                         #
-  pb09 <- as.matrix(read.xlsx('../data/2009Pbetaetreatmenteffect.xls',sheetIndex=1))
+  pb09 <- as.matrix(read.xls('../data/2009Pbetaetreatmenteffect.xls',sheet=1))
   pb09 <- data.frame(genotype=pb09[,1],tree=pb09[,2],x=as.numeric(pb09[,3]),c=as.numeric(pb09[,4]))
   pb09[pb09[,3]==1,3] <- 'x'
   pb09[pb09[,3]==2,3] <- 'c'
@@ -71,9 +73,13 @@ if (add.pb){
   pbr.09[[2]] <- cbind(pb=pb[[2]],pbr.09[[2]])
 }else{}
                                         #make binary
-as.binary <- function(x){x[x!=0] <- 1;return(x)}
-co.08 <- lapply(pbr.08,as.binary)
-co.09 <- lapply(pbr.09,as.binary)
+    as.binary <- function(x){x[x!=0] <- 1;return(x)}
+if (binary){
+    co.08 <- lapply(pbr.08,as.binary)
+    co.09 <- lapply(pbr.09,as.binary)
+}else{
+    co.08 <- pbr.08;co.09 <- pbr.09
+}
                                         #remove resistants
 if (rm.resistant){
   co.08[[1]] <- co.08[[1]][geno.08[[1]]!='1008'&geno.08[[1]]!='1020',]
@@ -86,6 +92,20 @@ if (rm.resistant){
 library(sna)
 library(ComGenR)
 source('~/projects/pb_removal_nets/src/helper_funcs.R')
+                                        #
+## weighted modularity analysis
+mods.08 <- lapply(co.08,computeModules)
+mods.09 <- lapply(co.09,computeModules)
+
+mods.08npb <- lapply(co.08,function(x) computeModules(x[colnames(x)!='pb']))
+mods.09npb <- lapply(co.09,function(x) computeModules(x[colnames(x)!='pb']))
+
+mods.08npb.r <- lapply(co.08,function(x) computeModules(rel(x[colnames(x)!='pb'])))
+mods.09npb.r <- lapply(co.09,function(x) computeModules(rel(x[colnames(x)!='pb'])))
+
+unlist(lapply(mods.08npb,slot,name='likelihood'));unlist(lapply(mods.09npb,slot,name='likelihood'))
+lapply(mods.08npb.r,slot,name='likelihood');lapply(mods.09npb.r,slot,name='likelihood')
+
                                         #
 print('Modeling networks')
 net.08 <- lapply(co.08,co.net)
