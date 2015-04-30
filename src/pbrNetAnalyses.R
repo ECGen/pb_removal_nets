@@ -24,7 +24,7 @@ pbr <- list(c08=pbr.08$c,x08=pbr.08$x,c09=pbr.09$c,x09=pbr.09$x)
 pbr <- lapply(pbr,function(x) x[,colnames(x)!='pb'])
 
 ### Observed Modularity
-obs <- lapply(pbr,computeModularity)
+obs <- lapply(pbr,computeModules)
 out <- write.table(unlist(lapply(obs,slot,name='likelihood')),file='../results/pbrObsMods.txt',col.names=FALSE,row.names=FALSE)
 
 ### Null Models
@@ -38,13 +38,14 @@ for (l in 1:length(pbr)){
     }
 }
 
+
 ### Null modularity
 out <- numeric(length=length(dir('./tmp')))
 names(out) <- dir('./tmp')
-for (i in 1:length(dir(tmp))){
-    x <- read.table(dir(tmp)[i])
+for (i in 1:length(dir('./tmp'))){
+    x <- read.table(dir('./tmp',full.names=TRUE)[i],sep=',')
     mod <- computeModules(x)
-    out[i] <- slot(x,'likelihood')
+    out[i] <- slot(mod,'likelihood')
 }
 
 write.table(out,file='../results/pbrNulMods.txt',col.names=FALSE)
