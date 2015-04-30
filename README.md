@@ -1,6 +1,23 @@
 pb_removal_nets
 ===============
 
+
+29 April 2015
+
+Analysis Outline
+1. Observed modularity
+2. Contribution to modularity
+
++ Without PB
+++ 2008
+++ 2009
+++ Averaged 2008 and 2009
++ With PB
+++ 2008
+++ 2009
+++ Averaged 2008 and 2009
+
+
 Co-occurrence network analysis of Art's Pemphigus removal data.
 
 30nov2014
