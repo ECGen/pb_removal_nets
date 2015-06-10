@@ -7,7 +7,7 @@
 #PBS -N pbr.mods
 #PBS -j oe 
 
-cd /N/home/m/k/mklau/Mason/mkls/pb_removal_nets/src/
+cd /N/u/mklau/Mason/mklau/pb_removal_nets/src
 Rscript pbrNetAnalyses.R 
 
 
