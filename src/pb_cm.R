@@ -25,9 +25,9 @@ spp <- 1
 for (mat in 1:length(pbr)){
     x <- pbr[[mat]]
     y <- lapply(paste(null.dir[[mat]],1:nitr,sep='/'),read.csv)
-    x[,spp] <- y[,spp]
     mod <- numeric()
     for (j in 1:length(x)){
+        x[,spp] <- y[[j]][,spp]
         mod[j] <- slot(computeModules(x[[j]]),name='likelihood')
     }
     write.csv(mod,file=paste('../results/cm','spp',names(pbr)[mat],'.csv',sep=''),row.names=FALSE)
