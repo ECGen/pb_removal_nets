@@ -1,0 +1,6 @@
+#! /bin/bash
+
+for i in `seq 1 12`
+do
+	qsub p_pbrna$i/p_pbrna$i.sh
+done

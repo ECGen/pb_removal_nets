@@ -2,10 +2,10 @@
 ### PB network modularity
 ##18Apr2015
 
-mknull <- TRUE
-getobs <- TRUE
-getnull <- TRUE
 n.null <- 5000
+mknull <- FALSE
+getobs <- FALSE
+getnull <- TRUE
 
 library(bipartite)
 library(methods)
@@ -28,10 +28,10 @@ pbr <- c(pbr,pbr.avg)
 pbr. <- lapply(pbr,function(x) x[,colnames(x)!='pb'])
 names(pbr.) <- paste(names(pbr.),'.npb',sep='')
 pbr <- c(pbr,pbr.)
+null.dir <- paste("../data/npb",names(pbr),sep="/")
 
 ### Null communities
 if (mknull){
-    null.dir <- paste("../data/npb",names(pbr),sep="/")
     sapply(null.dir,dir.create,recursive=TRUE)
 
     for (i in 1:length(pbr)){
@@ -43,25 +43,12 @@ if (mknull){
 if (getobs){
     obs <- lapply(pbr,computeModules)
     for (i in 1:length(obs)){
-        out <- computeModules(pbr[[i]])
-        dput(out,file=paste(null.dir,'/',names(obs)[[i]],'.rdata',sep=''))
+        dput(obs[[i]],file=paste(null.dir[[i]],'/',names(obs)[i],'.rdata',sep=''))
     }
 }
 
 ### Null modularity
-if (getnull){
-    out <- list()
-    mod <- numeric()
-    for (i in 1:length(null.dir)){
-        for (j in 1:length(dir(null.dir[[i]]))){
-            x <- read.csv(paste(null.dir[[i]],j,sep='/'))
-            mod[j] <- slot(computeModules(x),name='likelihood')
-        }
-        out[[i]] <- mod
-    }
-    out <- do.call(rbind,out)
-    write.csv(out,file='../results/nullMods.csv',row.names=FALSE)
-}
+### Stupidly parallelized
 
 ### Contribution to modularity
 
