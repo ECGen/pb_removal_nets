@@ -8,4 +8,4 @@
 #PBS -j oe 
 #PBS -d /N/u/mklau/Mason/mklau/pb_removal_nets/src
 
-Rscript pb_cm.sh
+Rscript pb_cm.R
