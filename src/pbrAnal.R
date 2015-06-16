@@ -17,36 +17,29 @@ pbr <- c(pbr,pbr.)
 null.dir <- paste("../data/npb",names(pbr),sep="/")
 
 ### Null model based modularity analysis
-obs <- dir('../results/',full.names=TRUE)
-x <- lapply(obs[grepl('rdata',obs)],dget)
+obs.dir <- dir('../results/',full.names=TRUE)
+obs.names <- sub('.rdata','',sub('../results//','',obs.dir[grepl('rdata',obs.dir)]))
+x <- lapply(obs.dir[grepl('rdata',obs.dir)],dget)
 obs <- unlist(lapply(x,slot,name='likelihood'))
-names(obs) <- c("c.avg.npb","c.avg","c08.npb","c08","c09.npb","c09","x.avg.npb","x.avg","x08.npb","x08","x09.npb","x09")
+names(obs) <- obs.names
+
 
 null <- dir('../results/',full.names=TRUE)
-x <- lapply(null[grepl('.csv',null)],read.csv)
-names(x) <- c("c.avg","c.avg.npb","c09","c09.npb","x.avg","x.avg.npb","x09","x09.npb")
-null <- x
+null.names <- sub('.csv','',sub('../results//','',null[grepl('.csv',null)]))
+null.names <- sub('nullMods','',null.names)
+null <- lapply(null[grepl('.csv',null)],read.csv)
+names(null) <- null.names
 
-### 2009 c and x
-obs.c09 <- obs[names(obs)=='c09']
-obs.x09 <- obs[names(obs)=='x09']
-null.c09 <- unlist(null[names(null)=='c09'])
-null.x09 <- unlist(null[names(null)=='x09'])
-zc09 <- (obs.c09 - mean(null.c09)) / sd(null.c09)
-zx09 <- (obs.x09 - mean(null.x09)) / sd(null.x09)
-pc09 <- length(null.c09[null.c09 >= obs.c09]) / length(null.c09)
-px09 <- length(null.x09[null.x09 >= obs.x09]) / length(null.x09)
+obs <- obs[names(obs) %in% names(null)]
+null <- null[names(null) %in% names(obs)]
+obs <- obs[order(names(obs))]
+null <- null[order(names(null))]
+if (all(names(null) == names(obs))){'Good!'}else{'Not so good...'}
 
-### average c and x
-obs.cAVG <- obs[names(obs) == 'c.avg']
-obs.xAVG <- obs[names(obs) == 'x.avg']
-null.cAVG <- unlist(null[names(null)=='c.avg'])
-null.xAVG <- unlist(null[names(null)=='x.avg'])
-zcAVG <- (obs.cAVG - mean(null.cAVG)) / sd(null.cAVG)
-zxAVG <- (obs.xAVG - mean(null.xAVG)) / sd(null.xAVG)
-pcAVG <- length(null.cAVG[null.cAVG >= obs.cAVG]) / length(null.cAVG)
-pxAVG <- length(null.xAVG[null.xAVG >= obs.xAVG]) / length(null.xAVG)
-
-
-z <- c(zc09,zx09,zcAVG,zxAVG)
-p <- c(pc09,px09,pcAVG,pxAVG)
+### 
+coa <- list()
+for (i in 1:length(obs)){coa[[i]] <- coStats(obs[i],null[[i]][,1])}
+coa <- do.call(rbind,coa)
+rownames(coa) <- names(null)
+colnames(coa) <- c('z','pval','obs','mean','sd')
+coa
