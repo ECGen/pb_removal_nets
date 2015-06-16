@@ -28,7 +28,7 @@ names(pbr) <- pbr
 null.dir <- paste("../../data/npb",names(pbr),sep="/")
 
 ### Null modules
-x <- lapply(paste(null.dir[[mat]],1:nitr,sep='/'),read.csv)
+x <- lapply(paste(null.dir[[mat]],1:nitr,sep='/'),read.csv,header=FALSE)
 mod <- numeric()
 for (j in 1:length(x)){
     mod[j] <- slot(computeModules(x[[j]]),name='likelihood')
