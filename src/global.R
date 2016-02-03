@@ -109,6 +109,17 @@ function(x='ordination matrix',g='groupings',cex=1,plot.legend=FALSE,loc='toplef
   }
 }
 
+coStats <- function(obs,null){
+    z <- (obs - mean(null)) / sd(null)
+    if (z <= 0){
+        pvalue <- length(null[null <= obs])/length(null)
+    }else if (z > 0){
+        pvalue <- length(null[null >= obs])/length(null)
+    }
+    out <- c(z=z,pvalue=pvalue,obs=obs,mean=mean(null),sd=sd(null))
+    return(out)
+}
+
 meanMat <- function(x,y){
     (equalMat(x,y)[[1]] + equalMat(x,y)[[2]]) / 2
 }
