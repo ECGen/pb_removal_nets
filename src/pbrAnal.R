@@ -50,3 +50,5 @@ pxAVG <- length(null.xAVG[null.xAVG >= obs.xAVG]) / length(null.xAVG)
 
 z <- c(zc09,zx09,zcAVG,zxAVG)
 p <- c(pc09,px09,pcAVG,pxAVG)
+
+
