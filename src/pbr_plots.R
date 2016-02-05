@@ -128,13 +128,24 @@ summary(lm(Z ~ abundance/trt))
 adonis(X ~ trt * genotype)
 
 ### Plots
-ch.col <- brewer.pal(n=max(as.numeric(cmgeno))+2, name='Set3')[as.numeric(cmgeno)+2]
-ch.pch <- rep(19,length(z.cmC))
+ch.dat <- list(c=data.frame(cmgeno,pb.A$c,z.cmC),x=data.frame(cmgeno,pb.A$x,z.cmX))
+### ch.dat <- lapply(ch.dat,function(x) x[x[,1] %in% c(1008,1020,996) == FALSE,])
+ch.col <- brewer.pal(n=max(as.numeric(ch.dat$c[,1]))+2, name='Set3')[as.numeric(ch.dat$c[,1])+2]
+ch.key <- data.frame(pch=c(19,19,25,24,22,22,23,23,24,25),geno=c(996,1000,1008,1017,1020,'coal 3','HE-10','Rm-2','T-15','WC-5'),col=c('black','grey','darkgrey','grey','black','darkgrey','black','grey','darkgrey','grey'))
+ch.col <- as.character(cmgeno)
+ch.pch <- as.character(cmgeno)
+for (i in 1:nrow(ch.key)){
+    ch.col[cmgeno == ch.key$geno[i]] <- as.character(ch.key$col[i])
+    ch.pch[cmgeno == ch.key$geno[i]] <- ch.key$pch[i]
+}
+ch.pch <- as.numeric(ch.pch)
 
 par(mfrow=c(1,1))
-leg.col <- chPlot(cbind(pb.A$c,z.cmC),f=cmgeno,col=ch.col,pch=ch.pch,xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='grey',xlab='PB Abundance',ylab='z (modularity)')
-chPlot(cbind(pb.A$x,z.cmX),f=cmgeno,col=ch.col,pch=(ch.pch-18),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,add=TRUE,line.lm=TRUE,line.lty=2,line.col='grey')
-legend('topright',legend=names(leg.col),col=leg.col,pch=19,bg='white',border='white')
+leg <- chPlot(ch.dat$x[,2:3],f=ch.dat$x[,1],col=ch.col,pch=ch.pch,xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='grey',xlab='PB Abundance',ylab='z (modularity)',cex=1.5)
+chPlot(ch.dat$c[,2:3],f=ch.dat$c[,1],col=ch.col,pch=ch.pch,xlim=c(0,75),ylim=c(0,1.5),se=TRUE,add=TRUE,line.lm=TRUE,line.lty=2,line.col='grey',cex=1.5)
+leg.col <- t(na.omit((as.matrix(leg$col))))[1,]
+### legend('topright',legend=c('Tree',names(leg$col),'','Aphid','Present','Excluded'),col=c(1,leg$col,1,1,1,1),pch=c(30,leg$pch,30,30,19,1),bg='white',box.col='black')
+legend('topright',legend=c('Aphid','Present','Excluded'),col=c(1,1,1),pch=c(30,19,1),bg='white',box.col='black')
 
 ### network plots
 net.c <- floor(meanMat(pbr.08$c,pbr.09$c))
