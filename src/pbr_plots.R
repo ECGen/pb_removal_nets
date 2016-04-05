@@ -2,10 +2,14 @@
 ### MKLau
 ### 18 Jun 2015
 
+library(glmm)
+library(lme4)
+library(enaR)
 source('global.R')
 source('pbrDataLoader.R')
 library('RColorBrewer')
 library('gplots')
+library('ggplot2')
 library('bipartite')
 
 coa <- read.csv('../data/pbr_coa.csv')
@@ -37,6 +41,9 @@ cmSppXavg <- (cmSppXavg[,sapply(colnames(cmSppXavg),function(x,y) x %in% y,y=col
 
 z.cmSppC <- apply(cmSppCavg,2,function(x,obs) (obs - mean(x)) / sd(x),obs=coa[1,4])
 z.cmSppX <- apply(cmSppXavg,2,function(x,obs) (obs - mean(x)) / sd(x),obs=coa[3,4])
+
+p.cmSppC <- apply(cmSppCavg,2,function(x,obs) length(x[x > obs])/length(x),obs=coa[1,4])
+p.cmSppX <- apply(cmSppXavg,2,function(x,obs) length(x[x > obs])/length(x),obs=coa[3,4])
 
 par(mfrow=c(1,2),mai=c(1.02*1.5, 0.82, 0.82, 0.42),cex.axis=0.5)
 barplot(sort(z.cmSppC),las=2,ylab='Species CM (Control)')
@@ -93,8 +100,12 @@ cmgeno <- factor(as.character(geno.09$x[as.numeric(colnames(cmCavg))]))
 z.cm <- c(z.cmX,z.cmC)
 trt <- c(rep('X',length(z.cmX)),rep('C',length(z.cmC)))
 geno <- factor(c(as.character(cmgeno),as.character(cmgeno)))
+pb <- unlist(pb.A)
 
-anova(glm(z.cm~geno*trt),test='Chi')
+cm.data <- list(c=data.frame(geno=cmgeno,pb=pb.A$c,cm=z.cmC),x=data.frame(geno=cmgeno,pb=pb.A$x,cm=z.cmX))
+anova(glm(I(cm^2) ~ geno * pb,data=cm.data$c),test='Chi')
+anova(glm(I(cm^2) ~ geno * pb,data=cm.data$x),test='Chi')
+
 
 par(cex.lab=1.25,cex.axis=1.25)
 interaction.plot(trt,geno,z.cm,type='b')
@@ -122,13 +133,25 @@ genotype <- unlist(geno.09)
 
 X <- cbind(Z,A=abundance)
 X <- apply(X,2,function(x) x/max(x))
+tree <- rep(1:length(z.cmC),2)
 
+summary(lm(I((Z^2)) ~ trt*tree/abundance))
 
-summary(lm(Z ~ abundance/trt))
-adonis(X ~ trt * genotype)
+z.data <- data.frame(tree=1:length(z.cmC),geno=geno.09$c,pb.a=I(pb.A$c-pb.A$x),cm.c=z.cmC,cm.x=z.cmX)
+z.data <- z.data[!(z.data$geno %in% c(1008,1020)),]
+z.data <- make.rm(constant=c("tree","pb.a","geno"),repeated=c("cm.c","cm.x"),data=z.data)
+
+summary(aov(repdat~contrasts*geno*pb.a+Error(tree),z.data))
+
+z.data <- data.frame(tree=1:length(z.cmC),geno=geno.09$c,pb.a=I(pb.A$c-pb.A$x),cm.c=z.cmC,cm.x=z.cmX,z.d=I(abs(z.cmC-z.cmX)))
+
+lmer(cm ~ pb * (1 | geno))
 
 ### Plots
-ch.dat <- list(c=data.frame(cmgeno,pb.A$c,z.cmC),x=data.frame(cmgeno,pb.A$x,z.cmX))
+ch.dat <- list(c=data.frame(cmgeno,pb.A$c,z.cmC),x=data.frame(cmgeno,pb.A$x,z.cmX),s=data.frame(cmgeno,pb.A$c,z.cmC)[cmgeno %in% c('996','1008','1020') == FALSE,],d=data.frame(cmgeno,(pb.A$c - pb.A$x),(z.cmX - z.cmC)))
+
+
+
 ### ch.dat <- lapply(ch.dat,function(x) x[x[,1] %in% c(1008,1020,996) == FALSE,])
 ch.col <- brewer.pal(n=max(as.numeric(ch.dat$c[,1]))+2, name='Set3')[as.numeric(ch.dat$c[,1])+2]
 ch.key <- data.frame(pch=c(19,19,25,24,22,22,23,23,24,25),geno=c(996,1000,1008,1017,1020,'coal 3','HE-10','Rm-2','T-15','WC-5'),col=c('black','grey','darkgrey','grey','black','darkgrey','black','grey','darkgrey','grey'))
@@ -140,25 +163,41 @@ for (i in 1:nrow(ch.key)){
 }
 ch.pch <- as.numeric(ch.pch)
 
+
 par(mfrow=c(1,1))
-leg <- chPlot(ch.dat$x[,2:3],f=ch.dat$x[,1],col=ch.col,pch=ch.pch,xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='grey',xlab='PB Abundance',ylab='z (modularity)',cex=1.5)
-chPlot(ch.dat$c[,2:3],f=ch.dat$c[,1],col=ch.col,pch=ch.pch,xlim=c(0,75),ylim=c(0,1.5),se=TRUE,add=TRUE,line.lm=TRUE,line.lty=2,line.col='grey',cex=1.5)
-leg.col <- t(na.omit((as.matrix(leg$col))))[1,]
-### legend('topright',legend=c('Tree',names(leg$col),'','Aphid','Present','Excluded'),col=c(1,leg$col,1,1,1,1),pch=c(30,leg$pch,30,30,19,1),bg='white',box.col='black')
-legend('topright',legend=c('Aphid','Present','Excluded'),col=c(1,1,1),pch=c(30,19,1),bg='white',box.col='black')
+chPlot(ch.dat$x[,2:3],f=ch.dat$x[,1],col=rep('darkgrey',length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='darkgrey',line.lty=1,xlab='Aphid Abundance',ylab=substitute(paste(italic('z'), " (modularity)" )),cex=1.5)
+abline(v=max(tapply(pb.A$x,cmgeno,mean)+tapply(pb.A$x,cmgeno,se)),col='darkgrey',lty=2)
+chPlot(ch.dat$s[,2:3],f=ch.dat$s[,1],col=rep(1,nrow(ch.dat$s)),pch=rep(19,nrow(ch.dat$s)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='darkgrey',line.lty=1,xlab='Aphid Abundance',ylab='z (modularity)',cex=1.5,add=TRUE)
+chPlot(ch.dat$c[,2:3],f=ch.dat$c[,1],col=rep(1,length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='black',xlab='Aphid Abundance',ylab='z (modularity)',cex=1.5,add=TRUE)
+legend('topright',legend=c('Aphid','Present','Excluded'),col=c(1,1,'darkgrey'),pch=c(30,19,19),bg='white',box.col='black')
 
 ### network plots
 net.c <- floor(meanMat(pbr.08$c,pbr.09$c))
 net.x <- floor(meanMat(pbr.08$x,pbr.09$x))
 
 ### unimodal representation of the bipartite networks
-##uni <- lapply(list(c08=pbr.08$c,x08=pbr.08$x,c09=pbr.09$c,x09=pbr.09$x),unipart)
-uni <- lapply(list(c=net.c,x=net.x),unipart,rm.zero=FALSE)
-names(uni) <- c('c','x')
-col <- lapply(uni,colnames)
-for (i in 1:length(col)){col[[i]][col[[i]] == 'pb'] <- 'red';col[[i]][col[[i]] != 'red'] <- 'grey'}
-ggnet2(uni[[1]],node.col=col[[1]],size='degree')
-ggnet2(uni[[2]],node.col=col[[2]],size='degree')
+## uni <- lapply(list(c08=pbr.08$c,x08=pbr.08$x,c09=pbr.09$c,x09=pbr.09$x),unipart)
+uni <- lapply(list(c=net.c,x=net.x),unipart,rm.zero=TRUE,std=FALSE,thresh=0.0001)
+## uni <- lapply(list(c08=pbr.08$c,x08=pbr.08$x,c09=pbr.09$c,x09=pbr.09$x),cdNet,alpha=0.001)
+uni <- lapply(uni,function(x) x[order(apply(x,1,sum),decreasing=TRUE),order(apply(x,2,sum),decreasing=TRUE)])
+
+uni.sub <- lapply(uni,function(x,n) x[1:n,1:n],n=35)
+uni.col <- lapply(uni,colnames)
+for (i in 1:length(uni.col)){
+    uni.col[[i]][tolower(uni.col[[i]]) == 'pb'] <- 'black';uni.col[[i]][tolower(uni.col[[i]]) != 'black'] <- 'darkgrey'
+}
+
+cen <- lapply(uni,evcent,rescale=TRUE)
+cen.sub <- lapply(uni,function(x,n) x[1:n],n=35)
+
+par(mfrow=c(1,2),mai=c(0,0,0.5,0))
+pc <- gplot.target(uni.sub$c,cen.sub$c,gmode='graph',circ.col='darkgrey',circ.lab=FALSE,vertex.col='white',displaylabels=FALSE,edge.col='lightgrey',edge.lwd=0.01,vertex.border='white',main='Aphid Present',vertex.cex=1)
+points(pc,col=uni.col$c,pch=19,cex=1.2)
+points(pc,col=uni.col$c,pch=19,cex=as.numeric(uni.col$c == 'black'))
+
+px <- gplot.target(uni.sub$x,cen.sub$x,gmode='graph',circ.col='darkgrey',circ.lab=FALSE,vertex.col='white',displaylabels=FALSE,edge.col='lightgrey',edge.lwd=0.01,vertex.border='white',main='Aphid Present',vertex.cex=1)
+points(px,col=uni.col$x,pch=19,cex=1.2)
+points(px,col=uni.col$x,pch=19,cex=as.numeric(uni.col$x == 'black'))
 
 deg <- lapply(uni,degree,rescale=TRUE)
 d.deg <- deg[[2]] - deg[[1]]
@@ -199,3 +238,25 @@ plotweb(sortMat(net),text.rot=90,
         col.high=spp.col[order(apply(net,2,sum),decreasing=TRUE)],
         method='normal',
         )
+
+
+### Final stats 8Feb2016
+
+## 1. Network modularity was 
+coa[c(2,4),]
+
+## 2. PB increased modularity at the scale of all trees
+## randomizing PB leads to community networks that are
+## less modular
+sort(z.cmSppC[abs(z.cmSppC) > 1.5])
+sort(z.cmSppX[abs(z.cmSppX) > 1.5])
+
+sort(p.cmSppC[abs(z.cmSppC) > 1.5])
+sort(p.cmSppX[abs(z.cmSppX) > 1.5])
+
+
+## 3. PB impacts tree genotype modularity
+
+anova(glm(I(cm^2) ~ geno * pb,data=cm.data$c),test='F')
+anova(glm(I(cm^2) ~ geno * pb,data=cm.data$x),test='F')
+

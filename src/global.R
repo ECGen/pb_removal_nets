@@ -1,11 +1,27 @@
+library(grid)
 library(bipartite)
 library(RCurl)
 library(XML)
 library(vegan)
 library(ggnet)
 
-unipart <- function(x,rm.zero=TRUE,plot=TRUE){
-    out <- t(as.matrix(sign(x))) %*% as.matrix(sign(x))
+unipart <- function(x,rm.zero=TRUE,std=TRUE,thresh=0.05){
+    out <- t(as.matrix(sign(x))) %*% 
+        as.matrix(sign(x))
+    if (std){out <- out / max(out)}
+    if (thresh == FALSE){thresh <- 0}else{
+        if (thresh > 1 | thresh < 0){
+            warning('Threshold outside bounds (0-1).')
+            thresh[thresh > 1] <- 1
+            thresh[thresh < 0] <- 0
+        }
+        h <- hist(out,plot=FALSE)
+        h <- head(h$breaks[h$density > thresh],2)
+        if (length(h) < 2 | any(is.na(h))){h <- 0}else{
+            h <- tail(h,1)
+        }
+    }
+    out[out < h] <- 0
     if (rm.zero){out <- out[apply(out,1,sum) != 0, apply(out,2,sum) != 0]}
     return(out)
 }
@@ -78,36 +94,6 @@ ch.vector <- function(x,t,pch,col){
     cbind(mu,se)
 }
 
-ch.plot <-
-function(x='ordination matrix',g='groupings',cex=1,plot.legend=FALSE,loc='topleft',mu.pch=19){
-  mu <- apply(x,2,function(x,g) tapply(x,g,mean),g=g)
-  se <- apply(x,2,function(x,g) tapply(x,g,function(x) sd(x)/sqrt(length(x))),g=g)
-  mu <- na.omit(mu)
-  se <- na.omit(se)
-                                        #error bars
-  cl.xu <- mu[,1] + se[,1]
-  cl.xl <- mu[,1] - se[,1]
-  cl.yu <- mu[,2] + se[,2]
-  cl.yl <- mu[,2] - se[,2]
-    if (plot.legend){
-                                        #coloring
-      mu.col <- rainbow(length(unique(g)))[as.numeric(unique(g))]
-      plot(mu,pch=mu.pch,cex=cex,xlim=c(min(cl.xl),max(cl.xu)),ylim=c(min(cl.yl),max(cl.yu)),col=mu.col)
-      for (i in 1:nrow(mu)){
-        lines(x=c(cl.xl[i],cl.xu[i]),y=c(mu[i,2],mu[i,2]))
-        lines(x=c(mu[i,1],mu[i,1]),y=c(cl.yl[i],cl.yu[i]))
-      }    
-      legend(loc,legend=rownames(se),cex=cex*0.5,pch=mu.pch,col=mu.col,border='grey')
-  }else{
-                                        #coloring
-    mu.col <- 'black'
-    plot(mu,pch=mu.pch,cex=cex,xlim=c(min(cl.xl),max(cl.xu)),ylim=c(min(cl.yl),max(cl.yu)),col=mu.col)
-    for (i in 1:nrow(mu)){
-      lines(x=c(cl.xl[i],cl.xu[i]),y=c(mu[i,2],mu[i,2]))
-      lines(x=c(mu[i,1],mu[i,1]),y=c(cl.yl[i],cl.yu[i]))
-    }
-  }
-}
 
 coStats <- function(obs,null){
     z <- (obs - mean(null)) / sd(null)
@@ -197,4 +183,116 @@ getStats <- function(obs,sim){
     p <- length(sim[sim >= obs]) / length(sim)
     out <- c(obs,mu.sim,sd.sim,z,p)
     return(out)
+}
+
+## Multiple plot function
+##
+## ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+## - cols:   Number of columns in layout
+## - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+##
+## If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+## then plot 1 will go in the upper left, 2 will go in the upper right, and
+## 3 will go all the way across the bottom.
+##
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+
+
+                                        # Make a list from the ... arguments and plotlist
+    plots <- c(list(...), plotlist)
+
+    numPlots = length(plots)
+
+                                        # If layout is NULL, then use 'cols' to determine layout
+    if (is.null(layout)) {
+                                        # Make the panel
+                                        # ncol: Number of columns of plots
+                                        # nrow: Number of rows needed, calculated from # of cols
+        layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                         ncol = cols, nrow = ceiling(numPlots/cols))
+    }
+
+    if (numPlots==1) {
+        print(plots[[1]])
+
+    } else {
+                                        # Set up the page
+        grid.newpage()
+        pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+                                        # Make each plot, in the correct location
+        for (i in 1:numPlots) {
+                                        # Get the i,j matrix positions of the regions that contain this subplot
+            matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+            print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                  layout.pos.col = matchidx$col))
+        }
+    }
+}
+
+                                        # creates a new data frame from an existing one containing repeated
+                                        # measures as columns, e.g. a data frame named exp1.df:
+                                        # subjectagerepeat1repeat2
+                                        # 001341.451.67
+                                        # 002381.201.54
+                                        # ...
+                                        # called like:
+                                        # make.rm(1:2,3:4,exp1.df)
+                                        # would multiply the "constant" variables by the number of
+                                        # repeats and reformat the repeats to a single column.
+                                        # subjectagerepdatcontrasts
+                                        # 001341.45T1
+                                        # 002381.20T1
+                                        # ...
+                                        # 001341.67T2
+                                        # 002381.54T2
+                                        # ...
+                                        # this allows a "univariate" repeated measures analysis of the data.
+
+# creates a new data frame from an existing one containing repeated
+# measures as columns, e.g. a data frame named exp1.df:
+# subject  age	       repeat1	   repeat2
+# 001	   	       34	   1.45	1.67
+# 002		       		   38	1.20	1.54
+# ...
+# called like:
+# make.rm(1:2,3:4,exp1.df)
+# would multiply the "constant" variables by the number of
+# repeats and reformat the repeats to a single column.
+# subject age repdat   contrasts
+# 001	      34       1.45	T1
+# 002	      	       38	1.20	T1
+# ...
+# 001		34	1.67	T2
+# 002			38	1.54	T2
+# ...
+# this allows a "univariate" repeated measures analysis of the data.
+
+make.rm<-function(constant,repeated,data,contrasts) {
+    if(!missing(constant) && is.vector(constant)) {
+        if(!missing(repeated) && is.vector(repeated)) {
+            if(!missing(data)) {
+                dd<-dim(data)
+                replen<-length(repeated)
+                if(missing(contrasts))
+                    contrasts<-
+                        ordered(sapply(paste("T",1:length(repeated),sep=""),rep,dd[1]))
+                else
+                    contrasts<-matrix(sapply(contrasts,rep,dd[1]),ncol=dim(contrasts)[2])
+                if(length(constant) == 1)
+                    cons.col<-rep(data[,constant],replen)
+                else cons.col<-lapply(data[,constant],rep,replen)
+                new.df<-data.frame(cons.col,
+                                   repdat=as.vector(data.matrix(data[,repeated])),
+                                   contrasts)
+                return(new.df)
+            }
+        }
+    }
+    cat("Usage: make.rm(constant, repeated,
+ data [, contrasts])\n")
+    cat("\tWhere 'constant' is a vector of indices of non-repeated data
+ and\n")
+    cat("\t'repeated' is a vector of indices of the repeated measures
+ data.\n")
 }
