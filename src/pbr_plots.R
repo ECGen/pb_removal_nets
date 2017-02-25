@@ -2,13 +2,12 @@
 ### MKLau
 ### 18 Jun 2015
 
-library(glmm)
-library(lme4)
+library(gplots)
 library(enaR)
 source('global.R')
 source('pbrDataLoader.R')
+library('TeachingDemos')
 library('RColorBrewer')
-library('gplots')
 library('ggplot2')
 library('bipartite')
 
@@ -150,7 +149,11 @@ lmer(cm ~ pb * (1 | geno))
 ### Plots
 ch.dat <- list(c=data.frame(cmgeno,pb.A$c,z.cmC),x=data.frame(cmgeno,pb.A$x,z.cmX),s=data.frame(cmgeno,pb.A$c,z.cmC)[cmgeno %in% c('996','1008','1020') == FALSE,],d=data.frame(cmgeno,(pb.A$c - pb.A$x),(z.cmX - z.cmC)))
 
-
+g.pch <- toupper(as.character(levels(cmgeno))[c(2,4,5,1,8,9,7,10,6,3)])
+g.pch[g.pch == 'COAL 3'] <- 'Coal-3'
+g.pch <- cbind(g.pch,pch = c(), col = c())
+g.pch 
+g.pch 
 
 ### ch.dat <- lapply(ch.dat,function(x) x[x[,1] %in% c(1008,1020,996) == FALSE,])
 ch.col <- brewer.pal(n=max(as.numeric(ch.dat$c[,1]))+2, name='Set3')[as.numeric(ch.dat$c[,1])+2]
@@ -165,11 +168,11 @@ ch.pch <- as.numeric(ch.pch)
 
 
 par(mfrow=c(1,1))
-chPlot(ch.dat$x[,2:3],f=ch.dat$x[,1],col=rep('darkgrey',length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='darkgrey',line.lty=1,xlab='Aphid Abundance',ylab=substitute(paste(italic('z'), " (modularity)" )),cex=1.5)
-abline(v=max(tapply(pb.A$x,cmgeno,mean)+tapply(pb.A$x,cmgeno,se)),col='darkgrey',lty=2)
+chPlot(ch.dat$x[,2:3],f=ch.dat$x[,1],col=rep('darkgrey',length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='darkgrey',line.lty=1,xlab=expression(italic('Pemphigus betae')~' abundance'),ylab='Tree genotype contribution to modularity (Z)',cex=1.5)
+abline(v=max(tapply(pb.A$x,cmgeno,mean)+tapply(pb.A$x,cmgeno,se)),col='lightgrey',lty=1)
 chPlot(ch.dat$s[,2:3],f=ch.dat$s[,1],col=rep(1,nrow(ch.dat$s)),pch=rep(19,nrow(ch.dat$s)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='darkgrey',line.lty=1,xlab='Aphid Abundance',ylab='z (modularity)',cex=1.5,add=TRUE)
-chPlot(ch.dat$c[,2:3],f=ch.dat$c[,1],col=rep(1,length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='black',xlab='Aphid Abundance',ylab='z (modularity)',cex=1.5,add=TRUE)
-legend('topright',legend=c('Aphid','Present','Excluded'),col=c(1,1,'darkgrey'),pch=c(30,19,19),bg='white',box.col='black')
+chPlot(ch.dat$c[,2:3],f=ch.dat$c[,1],col=rep(1,length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='black',xlab='Aphid Abundance',ylab='z (modularity)',cex=1.5,add=TRUE,line.lty=2)
+legend('topright',legend=c(expression(italic('P. betae')),'Present','Excluded'),col=c(1,1,'darkgrey'),pch=c(30,19,19),bg='white',box.col='black')
 
 ### network plots
 net.c <- floor(meanMat(pbr.08$c,pbr.09$c))
