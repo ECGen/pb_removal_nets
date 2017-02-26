@@ -147,32 +147,77 @@ z.data <- data.frame(tree=1:length(z.cmC),geno=geno.09$c,pb.a=I(pb.A$c-pb.A$x),c
 lmer(cm ~ pb * (1 | geno))
 
 ### Plots
-ch.dat <- list(c=data.frame(cmgeno,pb.A$c,z.cmC),x=data.frame(cmgeno,pb.A$x,z.cmX),s=data.frame(cmgeno,pb.A$c,z.cmC)[cmgeno %in% c('996','1008','1020') == FALSE,],d=data.frame(cmgeno,(pb.A$c - pb.A$x),(z.cmX - z.cmC)))
+g.pal <- grey(c(0,0.3,0.7,0.95))
+g.names <- toupper(as.character(levels(cmgeno))[c(2,4,5,1,8,9,7,10,6,3)])
+g.names[g.names == 'COAL 3'] <- 'Coal-3'
+g.pts <- data.frame(cmgeno = as.character(levels(cmgeno))[c(2,4,5,1,8,9,7,10,6,3)],g.names,
+                    pch = c(21,21,25,24,22,22,23,23,24,25), 
+                    col = rep(1,10), 
+                    bg = g.pal[c(1,3,2,4,2,3,1,3,2,4)])
+ch.dat <- list(c = data.frame(cmgeno,pb.A$c,z.cmC)[!(cmgeno %in% c('996','1008','1020')),],
+               x = data.frame(cmgeno,pb.A$x,z.cmX),
+               s = data.frame(cmgeno,pb.A$c,z.cmC)[cmgeno %in% c('996','1008','1020'),],
+               d = data.frame(cmgeno,(pb.A$c - pb.A$x),(z.cmX - z.cmC)))
 
-g.pch <- toupper(as.character(levels(cmgeno))[c(2,4,5,1,8,9,7,10,6,3)])
-g.pch[g.pch == 'COAL 3'] <- 'Coal-3'
-g.pch <- cbind(g.pch,pch = c(), col = c())
-g.pch 
-g.pch 
 
-### ch.dat <- lapply(ch.dat,function(x) x[x[,1] %in% c(1008,1020,996) == FALSE,])
-ch.col <- brewer.pal(n=max(as.numeric(ch.dat$c[,1]))+2, name='Set3')[as.numeric(ch.dat$c[,1])+2]
-ch.key <- data.frame(pch=c(19,19,25,24,22,22,23,23,24,25),geno=c(996,1000,1008,1017,1020,'coal 3','HE-10','Rm-2','T-15','WC-5'),col=c('black','grey','darkgrey','grey','black','darkgrey','black','grey','darkgrey','grey'))
-ch.col <- as.character(cmgeno)
-ch.pch <- as.character(cmgeno)
-for (i in 1:nrow(ch.key)){
-    ch.col[cmgeno == ch.key$geno[i]] <- as.character(ch.key$col[i])
-    ch.pch[cmgeno == ch.key$geno[i]] <- ch.key$pch[i]
+### figure 3
+par(mfrow = c(1,1))
+fig3out <- 'png'
+if (fig3out == 'pdf'){
+    pdf('../results/fig3.pdf')
+    line.lwd <- 3
+}else if (fig3out == 'png'){
+    png('../results/fig3.png',height = 1400,width = 1400,res = 82, pointsize = 34)
+    line.lwd <- 3
+}else{
+    line.lwd <- 1
 }
-ch.pch <- as.numeric(ch.pch)
+chPlot(ch.dat$x[,2:3],f=ch.dat$x[,1],
+       add = FALSE,
+       col = rep('lightgrey',nrow(ch.dat$x)),
+       pch = g.pts[match(ch.dat$x[,'cmgeno'],g.pts$cmgeno),'pch'],
+       cex = 1.5,
+       bg = as.character(g.pts[match(ch.dat$x[,'cmgeno'],g.pts$cmgeno),'bg']),
+       xlim = c(0,75),ylim = c(0,1.5),se = TRUE,
+       line.lm = TRUE,line.col = 'darkgrey',line.lty = 1,line.lwd = line.lwd,
+       xlab = expression(italic('Pemphigus betae')~' abundance'),
+       ylab = 'Tree genotype contribution to modularity (Z)')
+abline(v = max(tapply(pb.A$x,cmgeno,mean)+tapply(pb.A$x,cmgeno,se)),col = 'lightgrey',lty = 2,lwd = line.lwd)
+chPlot(ch.dat$c[,2:3],f=ch.dat$c[,1],
+       add = TRUE,
+       col = rep('black',nrow(ch.dat$c)),
+       pch = g.pts[match(ch.dat$c[,'cmgeno'],g.pts$cmgeno),'pch'],
+       bg = as.character(g.pts[match(ch.dat$c[,'cmgeno'],g.pts$cmgeno),'bg']),
+       xlim = c(0,75),ylim = c(0,1.5),se = TRUE,
+       line.lm = TRUE,line.col = 'black',line.lty = 1,line.lwd = line.lwd,
+       xlab = expression(italic('Pemphigus betae')~' abundance'),
+       ylab = 'Tree genotype contribution to modularity (Z)',cex=1.5)
+chPlot(ch.dat$s[,2:3],f=ch.dat$s[,1],
+       add = TRUE,
+       col = rep('red',nrow(ch.dat$s)),
+       pch = g.pts[match(ch.dat$s[,'cmgeno'],g.pts$cmgeno),'pch'],
+       cex = 1.5,
+       bg = as.character(g.pts[match(ch.dat$s[,'cmgeno'],g.pts$cmgeno),'bg']),
+       xlim = c(0,75),ylim = c(0,1.5),se = TRUE,
+       line.lm = TRUE,line.col = 'red',line.lty = 2,line.lwd = line.lwd,
+       xlab = '',
+       ylab = '')
+legend('topright',title = expression(italic('P. betae')),
+       legend = c('Present','Present (Resistant)','Excluded'),
+       col=c(1,'grey','red'),lty=c(1,1,2),lwd = line.lwd,bg='white',box.col='black')
+legend('bottomright',
+       legend = rep('         ',length(g.pts[,'g.names'])), 
+       lty = 1,lwd = line.lwd,
+       col = 'black', 
+       bg = 'white')
+legend('bottomright',
+       legend = paste0(rep(' ',length(g.pts[,'g.names'])),g.pts[,'g.names']), 
+       pch = g.pts[,'pch'],
+       col = g.pts[,'col'],
+       pt.bg = as.character(g.pts[,'bg']),
+       bty = 'n')
+if (fig3out == 'pdf' | fig3out == 'png'){dev.off()}else{}
 
-
-par(mfrow=c(1,1))
-chPlot(ch.dat$x[,2:3],f=ch.dat$x[,1],col=rep('darkgrey',length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='darkgrey',line.lty=1,xlab=expression(italic('Pemphigus betae')~' abundance'),ylab='Tree genotype contribution to modularity (Z)',cex=1.5)
-abline(v=max(tapply(pb.A$x,cmgeno,mean)+tapply(pb.A$x,cmgeno,se)),col='lightgrey',lty=1)
-chPlot(ch.dat$s[,2:3],f=ch.dat$s[,1],col=rep(1,nrow(ch.dat$s)),pch=rep(19,nrow(ch.dat$s)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='darkgrey',line.lty=1,xlab='Aphid Abundance',ylab='z (modularity)',cex=1.5,add=TRUE)
-chPlot(ch.dat$c[,2:3],f=ch.dat$c[,1],col=rep(1,length(ch.col)),pch=rep(19,length(ch.pch)),xlim=c(0,75),ylim=c(0,1.5),se=TRUE,line.lm=TRUE,line.col='black',xlab='Aphid Abundance',ylab='z (modularity)',cex=1.5,add=TRUE,line.lty=2)
-legend('topright',legend=c(expression(italic('P. betae')),'Present','Excluded'),col=c(1,1,'darkgrey'),pch=c(30,19,19),bg='white',box.col='black')
 
 ### network plots
 net.c <- floor(meanMat(pbr.08$c,pbr.09$c))

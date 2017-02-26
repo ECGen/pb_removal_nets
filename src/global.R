@@ -55,9 +55,10 @@ getElev <- function(latitude=52.4822,longitude=-1.8946){
     as.numeric(xmlValue(heightNode))
 }
 
-chPlot <- function(x,f,col,pch,se=FALSE,xlim=c(-1,1),ylim=c(-1,1),xlab='X',ylab='Y',add.plot=FALSE,line.lm=FALSE,line.lty=1,line.col=1,cex=1){
+chPlot <- function(x,f,col,pch,se=FALSE,xlim=c(-1,1),ylim=c(-1,1),xlab='X',ylab='Y',add.plot=FALSE,line.lm=FALSE,line.lty=1,line.col=1,line.lwd=1,cex=1,bg = 1){
     col <- tapply(col,f,function(x) x[1])
     pch <- tapply(pch,f,function(x) x[1])
+    bg <- tapply(bg,f,function(x) x[1])
     mu <- apply(x,2,function(x,f) tapply(x,f,mean),f=f)
     if (se){
         bars <- apply(x,2,function(x,f) 
@@ -69,19 +70,17 @@ chPlot <- function(x,f,col,pch,se=FALSE,xlim=c(-1,1),ylim=c(-1,1),xlab='X',ylab=
     bar.up <- mu + bars
     bar.lo <- mu - bars
 ### make the plot
-    if (add.plot){
-        points(mu,col=col,pch=pch,cex=cex)
-    }else{
-        plot(mu,col=col,pch=pch,xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,cex=cex)
+    if (!add.plot){
+        plot(mu,col=col,pch='',xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,cex=cex,bg=bg)
     }
     for (i in 1:nrow(mu)){
-        lines(c(bar.up[i,1],bar.lo[i,1]),rep(mu[i,2],2),col=col[i])
-        lines(rep(mu[i,1],2),c(bar.up[i,2],bar.lo[i,2]),col=col[i])
+        lines(c(bar.up[i,1],bar.lo[i,1]),rep(mu[i,2],2),col=col[i],lwd = line.lwd)
+        lines(rep(mu[i,1],2),c(bar.up[i,2],bar.lo[i,2]),col=col[i],lwd = line.lwd)
     }
+    points(mu,col=col,pch=pch,cex=cex,bg=bg)
     if (line.lm){
-        abline(lm(mu[,2]~mu[,1]),lty=line.lty,col=line.col)
+        abline(lm(mu[,2]~mu[,1]),lty=line.lty,col=line.col,lwd = line.lwd)
     }
-    return(list(col=col,pch=pch))
 }
 
 ch.point <- function(x,f){
