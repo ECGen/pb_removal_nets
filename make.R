@@ -12,7 +12,6 @@
 # Scaling/Parallel Computing
 # options(clustermq.scheduler = "multicore") # optional parallel
 # computing. Also needs parallelism = "clustermq"
-
 source("R/packages.R")  # Loads packages, e.g. library(drake).
 source("R/functions.R") # Custom code as a bunch of functions.
 source("R/plan.R")      # Creates the drake plan, i.e. the project.

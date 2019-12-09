@@ -2,7 +2,7 @@
 ### MKLau
 ### 18 Jun 2015
 
-
+source("../R/packages.R")
 
 coa <- read.csv('../data/pbr_coa.csv')
 coa <- coa[c(4,5,8,9),]
