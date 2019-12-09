@@ -2,14 +2,7 @@
 ### MKLau
 ### 18 Jun 2015
 
-library(gplots)
-library(enaR)
-source('global.R')
-source('pbrDataLoader.R')
-library('TeachingDemos')
-library('RColorBrewer')
-library('ggplot2')
-library('bipartite')
+
 
 coa <- read.csv('../data/pbr_coa.csv')
 coa <- coa[c(4,5,8,9),]
