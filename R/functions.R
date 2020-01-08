@@ -49,9 +49,10 @@ std.max <- function(x){
     if (sum(x) == 0){x}else{x / max(x)}
 }
 
-get_mods <- function(bp){
+get_mods <- function(bp, seed = 12345){
     mod <- lapply(bp, computeModules, deep = FALSE)
     out <- lapply(mod, get_modules)
+
     return(out)
 }
 
